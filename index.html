@@ -1,0 +1,1535 @@
+<!DOCTYPE html>
+<!--
+  Navraj Singh Gill — ML portfolio ("the annotated vector space")
+  Single static file. No build step. Deploy on GitHub Pages:
+    1) repo → add this file as index.html   2) Settings → Pages → deploy from main
+  Must be served over http(s):// — ESM imports + model fetch don't run on file://.
+  The ranking is real: Xenova/all-MiniLM-L6-v2 via transformers.js, in-browser,
+  with a tag-model fallback if the CDN or model fetch fails. View source freely.
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Navraj Singh Gill — the portfolio is the model</title>
+<meta name="description" content="A CS @ Waterloo portfolio that ranks itself against your job description using a real sentence-transformer running in your browser.">
+<meta name="theme-color" content="#FAFAF7">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23FAFAF7"/><path d="M16 5v22M5 16h22" stroke="%232337E8" stroke-width="2"/><circle cx="16" cy="16" r="5.5" fill="none" stroke="%23FF4D17" stroke-width="2"/></svg>'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ tokens ============ */
+:root{
+  color-scheme:light;
+  --paper:#FAFAF7;
+  --panel:#F2F2EA;
+  --card:#FFFFFF;
+  --ink:#12151A;
+  --ink-2:#454C57;
+  --ink-3:#626A75;
+  --blue:#2337E8;
+  --blue-deep:#16249B;
+  --blue-soft:rgba(35,55,232,.08);
+  --signal:#FF4D17;
+  --signal-ink:#C23807;
+  --hair:rgba(18,21,26,.16);
+  --hair-2:rgba(18,21,26,.08);
+  --grid:rgba(35,55,232,.06);
+  --disp:'Space Grotesk',system-ui,sans-serif;
+  --body:'Inter',system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --r:3px;
+  --wrap:1180px;
+}
+/* ============ base ============ */
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px),
+    var(--paper);
+  background-size:48px 48px,48px 48px,auto;
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:16px;
+  line-height:1.58;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:var(--disp);font-weight:700;line-height:1.04;letter-spacing:-.03em;margin:0}
+a{color:inherit;text-decoration:none}
+a:hover{color:var(--blue)}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:none;padding:0}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+.mono{font-family:var(--mono)}
+.wrap{width:min(var(--wrap),calc(100% - 40px));margin:0 auto}
+.skip{position:absolute;left:-9999px;top:0;background:var(--ink);color:var(--paper);padding:10px 14px;z-index:99;font-family:var(--mono);font-size:13px}
+.skip:focus{left:12px;top:12px}
+::selection{background:var(--blue);color:#fff}
+
+/* ============ figure furniture (signature) ============ */
+.fig-kicker{
+  font-family:var(--mono);font-size:12px;font-weight:600;color:var(--blue-deep);
+  text-transform:uppercase;letter-spacing:.14em;
+}
+.fig-kicker b{color:var(--signal-ink);font-weight:600}
+.frame{position:relative;border:1px solid var(--hair);background:var(--card);border-radius:var(--r)}
+.frame .cx{position:absolute;width:11px;height:11px;pointer-events:none}
+.frame .cx::before,.frame .cx::after{content:"";position:absolute;background:var(--blue)}
+.frame .cx::before{left:5px;top:0;width:1px;height:11px}
+.frame .cx::after{left:0;top:5px;width:11px;height:1px}
+.frame .cx.tl{left:-6px;top:-6px}.frame .cx.tr{right:-6px;top:-6px}
+.frame .cx.bl{left:-6px;bottom:-6px}.frame .cx.br{right:-6px;bottom:-6px}
+.figcap{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-top:10px;line-height:1.5}
+.figcap b{color:var(--ink);font-weight:500}
+.rule-ticks{height:8px;border-bottom:1px solid var(--hair);
+  background:repeating-linear-gradient(90deg,var(--hair) 0 1px,transparent 1px 24px);
+  background-size:auto 6px;background-repeat:repeat-x;background-position:bottom;margin:14px 0 0}
+
+/* ============ topbar ============ */
+.topbar{position:sticky;top:0;z-index:30;background:rgba(250,250,247,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--hair)}
+.nav{height:60px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--disp);font-weight:700;letter-spacing:-.01em}
+.brand-mark{width:28px;height:28px;flex:none;display:grid;place-items:center}
+.brand-mark svg{display:block}
+.navlinks{display:flex;align-items:center;gap:2px;font-family:var(--mono);font-size:13px}
+.navlinks a{color:var(--ink-2);padding:7px 10px;border-radius:var(--r)}
+.navlinks a:hover{color:var(--blue);background:var(--blue-soft)}
+
+/* ============ hero ============ */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,440px);gap:44px;align-items:center;padding:64px 0 56px}
+.status{
+  display:inline-flex;align-items:center;gap:9px;
+  border:1px solid var(--hair);background:var(--card);border-radius:999px;
+  padding:7px 13px;font-family:var(--mono);font-size:12px;color:var(--ink-2);letter-spacing:.02em;
+}
+.status i{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none;
+  animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,23,.5)}55%{box-shadow:0 0 0 6px rgba(255,77,23,0)}}
+h1{margin:26px 0 20px;font-size:clamp(42px,6.6vw,86px);max-width:12ch}
+.h1-accent{display:block;color:var(--blue)}
+.q{font-style:normal;color:var(--signal-ink);
+  text-decoration:underline dotted var(--signal);text-decoration-thickness:2px;text-underline-offset:6px}
+.intro{max-width:600px;color:var(--ink-2);font-size:clamp(16px,1.6vw,18px)}
+.intro strong{color:var(--ink);font-weight:600}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  min-height:44px;padding:0 18px;border-radius:var(--r);
+  border:1px solid var(--ink);background:var(--card);color:var(--ink);
+  font-weight:600;font-size:14px;transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(18,21,26,.12);color:var(--ink)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.quiet{border-color:var(--hair)}
+.hero-fig{padding:18px 18px 14px}
+.mech-wrap{position:relative;aspect-ratio:1/1;background:
+  linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),#fff;
+  background-size:28px 28px;border:1px solid var(--hair-2);border-radius:var(--r);overflow:hidden}
+.mech-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.metric{border:1px solid var(--hair-2);border-radius:var(--r);padding:10px 11px;background:var(--paper)}
+.metric b{display:block;font-family:var(--mono);font-weight:600;font-size:20px;line-height:1;color:var(--blue-deep)}
+.metric span{display:block;color:var(--ink-3);font-family:var(--mono);font-size:10.5px;margin-top:6px;text-transform:uppercase;letter-spacing:.08em}
+
+/* ============ console band ============ */
+.band{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);background:var(--panel);padding:0 0 34px}
+.band-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:22px 0 18px;flex-wrap:wrap}
+.band-head .mono{font-size:12px;color:var(--ink-3)}
+.console-grid{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr) minmax(280px,330px);gap:16px;align-items:stretch}
+.cpanel{border:1px solid var(--hair);background:var(--card);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;min-width:0}
+.cpanel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.cpanel-title h3{font-size:16px;letter-spacing:-.01em}
+.badge{font-family:var(--mono);font-size:11.5px;font-weight:600;color:var(--blue-deep);background:var(--blue-soft);border:1px solid rgba(35,55,232,.22);border-radius:999px;padding:4px 9px;white-space:nowrap}
+label.field-label{display:block;font-family:var(--mono);font-size:11px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.jd{
+  width:100%;min-height:132px;resize:vertical;
+  border:1px solid var(--hair);border-radius:var(--r);background:var(--paper);
+  padding:11px 12px;font-family:var(--mono);font-size:13px;line-height:1.55;color:var(--ink);
+}
+.jd:focus-visible{outline:2px solid var(--signal);outline-offset:1px}
+.jd::placeholder{color:var(--ink-3)}
+.jd-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
+.samples{display:flex;gap:6px;flex-wrap:wrap}
+.sample,.jd-clear{
+  font-family:var(--mono);font-size:11.5px;border:1px solid var(--hair);border-radius:999px;
+  padding:5px 10px;color:var(--ink-2);background:var(--paper);transition:border-color .15s,color .15s;
+}
+.sample:hover{border-color:var(--signal);color:var(--signal-ink)}
+.jd-clear:hover{border-color:var(--ink);color:var(--ink)}
+.model-status{display:flex;align-items:center;gap:8px;margin-top:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-3);min-height:18px}
+.model-status i{width:7px;height:7px;border-radius:50%;background:var(--ink-3);flex:none;transition:background .3s}
+.model-status[data-state="loading"] i{background:var(--signal);animation:pulse 1.4s ease-in-out infinite}
+.model-status[data-state="ready"] i{background:var(--blue)}
+.model-status[data-state="fallback"] i{background:var(--ink-3)}
+.model-bar{height:3px;border-radius:2px;background:var(--hair-2);overflow:hidden;margin-top:7px;opacity:0;transition:opacity .3s}
+.model-bar.on{opacity:1}
+.model-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--signal));transition:width .25s ease}
+.divider{border:none;border-top:1px solid var(--hair-2);margin:16px 0}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.preset{
+  min-height:38px;border:1px solid var(--hair);border-radius:var(--r);background:var(--paper);
+  color:var(--ink-2);font-weight:600;font-size:12.5px;font-family:var(--mono);transition:all .15s;
+}
+.preset:hover:not(:disabled){border-color:var(--blue);color:var(--blue-deep)}
+.preset.active{background:var(--blue-soft);border-color:var(--blue);color:var(--blue-deep)}
+.chip-wrap{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border:1px solid var(--hair);background:var(--paper);color:var(--ink-2);border-radius:999px;
+  padding:7px 11px;display:inline-flex;align-items:center;gap:7px;
+  font-family:var(--mono);font-size:12px;transition:all .15s;
+}
+.chip i{width:7px;height:7px;border-radius:50%;background:var(--ink-3);transition:background .15s}
+.chip:hover:not(:disabled){border-color:var(--blue);color:var(--blue-deep)}
+.chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.chip[aria-pressed="true"] i{background:#fff}
+.preset:disabled,.chip:disabled{opacity:.38;cursor:not-allowed}
+.chip-note{font-family:var(--mono);font-size:11px;color:var(--signal-ink);margin-top:10px;min-height:14px}
+/* map */
+.map-panel{padding:14px 14px 12px}
+.map-frame{position:relative;background:
+  linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),#fff;
+  background-size:32px 32px;border:1px solid var(--hair-2);border-radius:var(--r)}
+.map-frame svg{display:block;width:100%;height:auto}
+.pt{cursor:pointer}
+.pt circle.dot{fill:var(--blue);stroke:#fff;stroke-width:2;transition:fill .2s}
+.pt text{font-family:var(--mono);font-size:11px;fill:var(--ink-2);paint-order:stroke;stroke:#fff;stroke-width:3px;pointer-events:none}
+.pt.hot circle.dot{fill:var(--blue-deep)}
+.pt.hover circle.dot,.pt:hover circle.dot,.pt:focus-visible circle.dot{fill:var(--signal)}
+.pt:focus-visible{outline:none}
+.pt:focus-visible circle.dot{stroke:var(--signal);stroke-width:3}
+#jdPt circle.core{fill:var(--signal);stroke:#fff;stroke-width:2}
+#jdPt circle.halo{fill:none;stroke:var(--signal);stroke-width:1.5;opacity:.7}
+#jdPt.pulse circle.halo{animation:halo 1.8s ease-out infinite}
+@keyframes halo{0%{r:9;opacity:.7}100%{r:22;opacity:0}}
+#jdPt text{font-family:var(--mono);font-size:11px;font-weight:600;fill:var(--signal-ink);paint-order:stroke;stroke:#fff;stroke-width:3px}
+.nnline{stroke:var(--signal);stroke-width:1.5;stroke-dasharray:4 4;opacity:.75}
+.axis-lab{font-family:var(--mono);font-size:10px;fill:var(--ink-3)}
+.map-legend{display:flex;gap:16px;align-items:center;margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--ink-3);flex-wrap:wrap}
+.map-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:-1px}
+.map-legend .lb i{background:var(--blue)}
+.map-legend .lo i{background:var(--signal)}
+/* output */
+.match-list{display:grid;gap:9px}
+.match-row{display:grid;grid-template-columns:20px minmax(0,1fr) 52px;gap:9px;align-items:center;font-family:var(--mono);font-size:12px}
+.match-row .idx{color:var(--ink-3)}
+.match-row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.match-row .bar{grid-column:2/4;height:5px;border-radius:3px;background:var(--hair-2);overflow:hidden}
+.match-row .bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .6s cubic-bezier(.22,1,.36,1)}
+.match-row.top .bar i{background:linear-gradient(90deg,var(--blue),var(--signal))}
+.match-row .cs{color:var(--blue-deep);text-align:right}
+.weight-list{display:grid;gap:9px}
+.weight-row{display:grid;grid-template-columns:78px 1fr 32px;gap:9px;align-items:center;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.weight-row .track{height:5px;border-radius:3px;background:var(--hair-2);overflow:hidden}
+.weight-row .track i{display:block;height:100%;background:var(--blue);transition:width .4s ease}
+.pitch-block{margin-top:auto;padding-top:16px}
+.pitch{font-size:13.5px;color:var(--ink-2);min-height:88px;margin:8px 0 12px}
+.pitch::after{content:"▌";color:var(--signal);animation:blink 1s steps(1) infinite}
+.pitch.done::after{content:""}
+@keyframes blink{50%{opacity:0}}
+
+/* ============ sections ============ */
+.section{padding:72px 0 0}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:26px}
+.section-head h2{font-size:clamp(30px,4.2vw,52px);margin-top:8px;max-width:16ch}
+.section-head p{max-width:420px;color:var(--ink-3);margin:0;font-size:14px}
+
+/* evidence cards */
+.rank-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.signal-card{
+  grid-column:span 4;position:relative;
+  border:1px solid var(--hair);border-radius:var(--r);background:var(--card);
+  padding:18px 18px 14px;min-height:260px;display:flex;flex-direction:column;
+  cursor:pointer;transition:border-color .2s,box-shadow .2s,opacity .3s,transform .18s;
+}
+.signal-card::before{content:"";position:absolute;left:-1px;top:12px;bottom:12px;width:3px;background:var(--blue);border-radius:2px;opacity:0;transition:opacity .25s}
+.signal-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 28px rgba(18,21,26,.1)}
+.signal-card.hot{border-color:rgba(35,55,232,.5)}
+.signal-card.hot::before,.signal-card.hover-src::before{opacity:1}
+.signal-card.hover-src{border-color:var(--signal)}
+.signal-card.dim{opacity:.42}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+.card-kind{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.12em;padding-top:6px}
+.gauge-wrap{display:flex;align-items:flex-end;gap:7px}
+.gauge{width:56px;height:32px;overflow:visible}
+.gauge .g-track{fill:none;stroke:var(--hair-2);stroke-width:5;stroke-linecap:round}
+.gauge .g-fill{fill:none;stroke:var(--blue);stroke-width:5;stroke-linecap:round;
+  stroke-dasharray:81.7;stroke-dashoffset:81.7;transition:stroke-dashoffset .7s cubic-bezier(.22,1,.36,1),stroke .3s}
+.signal-card.hot .gauge .g-fill{stroke:var(--signal)}
+.g-num{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--blue-deep);line-height:1;min-width:30px}
+.card-title{all:unset;cursor:pointer;font:inherit;display:block}
+.card-title:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:2px}
+.signal-card h3{font-size:19px;letter-spacing:-.015em}
+.role{color:var(--ink-3);font-family:var(--mono);font-size:11.5px;margin:5px 0 0}
+.card-bullets{margin:12px 0 0;padding-left:17px;color:var(--ink-2);font-size:13.5px;flex:1}
+.card-bullets li{margin:0 0 7px}
+.card-bullets li::marker{color:var(--blue)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.tag{border:1px solid var(--hair-2);border-radius:999px;padding:3px 8px;color:var(--ink-3);font-family:var(--mono);font-size:10.5px}
+.tag.on{border-color:var(--blue);color:var(--blue-deep);background:var(--blue-soft)}
+.card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--hair-2);font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.card-foot .cue{color:var(--blue-deep)}
+.signal-card:hover .cue{color:var(--signal-ink)}
+
+/* trajectory */
+.tl-frame{padding:20px 16px 8px;overflow-x:auto}
+.tl-frame svg{display:block;min-width:640px;width:100%;height:auto}
+.tl-bar{fill:var(--blue);opacity:.9}
+.tl-bar.approx{fill:none;stroke:var(--signal);stroke-width:2;stroke-dasharray:5 4}
+.tl-lab{font-family:var(--mono);font-size:11.5px;fill:var(--ink)}
+.tl-sub{font-family:var(--mono);font-size:10px;fill:var(--ink-3)}
+.tl-axis{stroke:var(--hair)}
+.tl-tick{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3)}
+.tl-now{stroke:var(--signal);stroke-dasharray:3 4}
+.tl-open{fill:url(#fadeblue)}
+.reveal .tl-bar,.reveal .tl-open{transform:scaleX(0);transform-origin:left;transition:transform .9s cubic-bezier(.22,1,.36,1)}
+.reveal.in .tl-bar,.reveal.in .tl-open{transform:scaleX(1)}
+
+/* skills band */
+.skills-band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:var(--r);overflow:hidden}
+.skill-block{background:var(--card);padding:18px;min-height:140px}
+.skill-block h3{font-size:15px;color:var(--blue-deep);margin-bottom:9px}
+.skill-block p{margin:0;color:var(--ink-2);font-size:13.5px}
+
+/* resume */
+.resume-zone{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:18px;align-items:start}
+.paper{
+  background:#fff;color:#17211f;border:1px solid var(--hair);border-radius:var(--r);
+  padding:32px;box-shadow:0 18px 50px rgba(18,21,26,.09);min-height:640px;
+  transition:box-shadow .3s;
+}
+.paper.flash{box-shadow:0 0 0 2px var(--signal),0 18px 50px rgba(18,21,26,.09)}
+.paper h3{margin:0;text-align:center;font-size:26px}
+.paper .contact{text-align:center;color:#5a6763;font-size:12px;margin:4px 0 16px;font-family:var(--mono)}
+.paper-section{border-top:1px solid #c9cfc9;padding-top:9px;margin-top:13px}
+.paper-section h4{margin:0 0 7px;text-transform:uppercase;letter-spacing:.09em;font-size:13px;font-family:var(--disp)}
+.paper-item{margin:0 0 10px}
+.paper-item strong{display:block;font-size:14px}
+.paper-item span{display:block;color:#5a6763;font-size:12px;font-style:italic}
+.paper ul{margin:5px 0 0;padding-left:18px;font-size:12.5px;line-height:1.4}
+.paper li{margin-bottom:4px}
+.resume-actions{border:1px solid var(--hair);border-radius:var(--r);background:var(--card);padding:18px;position:sticky;top:76px}
+.resume-actions h3{font-size:17px;margin-bottom:8px}
+.resume-actions p{margin:0 0 14px;color:var(--ink-3);font-size:13.5px}
+.action-stack{display:grid;gap:9px}
+.resume-mode{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);margin-top:12px;padding-top:12px;border-top:1px solid var(--hair-2)}
+.resume-mode b{color:var(--blue-deep);font-weight:600}
+
+/* footer */
+.footer{margin-top:80px;border-top:1px solid var(--hair);padding:28px 0 44px;color:var(--ink-3);font-family:var(--mono);font-size:12px}
+.footer .colophon{max-width:720px;margin-top:10px;line-height:1.7}
+.footer a{color:var(--ink-2);text-decoration:underline dotted var(--hair);text-underline-offset:3px}
+.footer a:hover{color:var(--blue)}
+
+/* dialog */
+dialog.case{
+  width:min(700px,calc(100vw - 32px));max-height:min(82vh,760px);
+  border:1px solid var(--hair);border-radius:var(--r);background:var(--card);color:var(--ink);
+  padding:0;box-shadow:0 30px 80px rgba(18,21,26,.25);
+}
+dialog.case::backdrop{background:rgba(18,21,26,.42);backdrop-filter:blur(3px)}
+dialog.case[open]{animation:dlgIn .28s cubic-bezier(.22,1,.36,1)}
+@keyframes dlgIn{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.dlg-inner{padding:24px 26px 26px;overflow:auto;max-height:inherit}
+.dlg-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.dlg-x{width:36px;height:36px;border:1px solid var(--hair);border-radius:var(--r);display:grid;place-items:center;font-size:15px;color:var(--ink-2);background:var(--paper)}
+.dlg-x:hover{border-color:var(--ink);color:var(--ink)}
+dialog.case h3{font-size:clamp(24px,3.5vw,34px)}
+.dlg-fit{font-family:var(--mono);font-size:12px;color:var(--blue-deep);margin:10px 0 0}
+.dlg-sec{margin-top:18px}
+.dlg-sec h4{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--ink-3);text-transform:uppercase;letter-spacing:.13em;margin:0 0 7px}
+.dlg-sec p{margin:0;color:var(--ink-2);font-size:14.5px}
+.dlg-sec ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:14px}
+.dlg-sec li{margin-bottom:6px}
+.stack-chips{display:flex;flex-wrap:wrap;gap:6px}
+.stack-chips span{border:1px solid var(--hair);border-radius:999px;padding:4px 10px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2);background:var(--paper)}
+.dlg-links a{font-family:var(--mono);font-size:12.5px;color:var(--blue-deep);text-decoration:underline;text-underline-offset:3px}
+dialog.case:not([open]){display:none}
+
+/* toast */
+.toast{
+  position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(16px);opacity:0;pointer-events:none;
+  border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:var(--r);
+  padding:10px 14px;font-family:var(--mono);font-size:12px;transition:opacity .2s,transform .2s;z-index:60;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,1,.36,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* noscript */
+.nojs{border:1px dashed var(--hair);border-radius:var(--r);padding:16px;font-size:14px;color:var(--ink-2);background:var(--card)}
+.nojs ul{margin:8px 0 0;padding-left:18px}
+
+/* ============ responsive ============ */
+@media(max-width:1080px){
+  .console-grid{grid-template-columns:1fr 1fr}
+  .map-panel{grid-column:1/-1;order:-1}
+  .signal-card{grid-column:span 6}
+}
+@media(max-width:820px){
+  .hero{grid-template-columns:1fr;gap:30px;padding-top:40px}
+  .console-grid{grid-template-columns:1fr}
+  .resume-zone{grid-template-columns:1fr}
+  .resume-actions{position:static}
+  .skills-band{grid-template-columns:1fr 1fr}
+  .section-head{display:block}
+  .section-head p{margin-top:10px}
+}
+@media(max-width:640px){
+  .wrap{width:calc(100% - 28px)}
+  .nav{height:auto;min-height:56px;flex-wrap:wrap;padding:10px 0}
+  .navlinks{width:100%;overflow-x:auto;padding-bottom:4px}
+  .signal-card{grid-column:span 12}
+  .skills-band,.metric-row{grid-template-columns:1fr}
+  .paper{padding:20px}
+  .section{padding-top:56px}
+}
+
+/* ============ reduced motion ============ */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .pitch::after{content:""}
+}
+
+/* ============ print: resume only ============ */
+@media print{
+  body{background:#fff}
+  .topbar,.hero,.band,.section:not(#resume),.footer,.toast,.resume-actions,dialog,.section-head{display:none!important}
+  #resume{padding:0}
+  .resume-zone{display:block}
+  .paper{box-shadow:none;border:none;border-radius:0;padding:0;min-height:0}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#model">Skip to the console</a>
+
+<div class="topbar">
+  <nav class="wrap nav" aria-label="Primary">
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"><svg width="28" height="28" viewBox="0 0 32 32"><path d="M16 4v24M4 16h24" stroke="#2337E8" stroke-width="2"/><circle cx="16" cy="16" r="6" fill="none" stroke="#FF4D17" stroke-width="2"/></svg></span>
+      <span>Navraj Singh Gill</span>
+    </a>
+    <div class="navlinks">
+      <a href="#model">console</a>
+      <a href="#evidence">evidence</a>
+      <a href="#trajectory">trajectory</a>
+      <a href="#resume">resume</a>
+      <a href="mailto:ns8gill@uwaterloo.ca">email</a>
+      <a href="https://github.com/Navraj-bite" target="_blank" rel="noopener">github ↗</a>
+      <a href="https://www.linkedin.com/in/navrajsgill" target="_blank" rel="noopener">linkedin ↗</a>
+    </div>
+  </nav>
+</div>
+
+<main id="top">
+  <!-- ============ hero ============ -->
+  <section class="wrap hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="status"><i aria-hidden="true"></i>swe intern @ code driven labs · seeking ML internships</p>
+      <h1 id="hero-title">This portfolio ranks <span class="h1-accent">itself against <em class="q">your job description</em>.</span></h1>
+      <p class="intro">I'm Navraj. I study CS at <strong>Waterloo</strong>, and the way I learn is mostly the same everywhere: build something until it breaks, then sit with it until I actually understand why, rather than moving on once it works. What draws me to this field is that it's honest. Code runs or it doesn't, a model generalizes or it overfits, and there's no talking your way around a stack trace, which I find calming rather than stressful. I finish what I start, I don't claim to know something I haven't tested myself, and I'd rather underclaim and show you than overclaim and explain later.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#model">Paste a job description ↓</a>
+        <button class="btn" type="button" id="heroExport">Export tailored resume</button>
+        <a class="btn quiet" href="https://github.com/Navraj-bite" target="_blank" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+    <figure class="hero-fig frame" aria-labelledby="fig1cap" style="margin:0">
+      <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
+      <div class="mech-wrap"><canvas id="mech" aria-hidden="true"></canvas></div>
+      <div class="metric-row" role="group" aria-label="Live model readout">
+        <div class="metric"><b id="heroFit">—</b><span id="heroFitLab">role fit</span></div>
+        <div class="metric"><b id="heroSignals">8</b><span>signals ranked</span></div>
+        <div class="metric"><b id="heroFocus">ML</b><span>current focus</span></div>
+      </div>
+      <figcaption class="figcap" id="fig1cap"><span class="fig-kicker">fig. 01 — the scoring rule.</span> <span id="mechCap">Every card's fit = cos θ between its embedding and the job description's, measured in 384 dimensions. This is the whole trick; everything else is presentation.</span></figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ console ============ -->
+  <section class="band" id="model" aria-label="Matching model console">
+    <div class="wrap">
+      <div class="band-head">
+        <span class="fig-kicker">fig. 02 — the console. <b>orange = your query</b> · blue = my work</span>
+        <span class="mono">model: Xenova/all-MiniLM-L6-v2 · 384-d · client-side</span>
+      </div>
+      <div class="console-grid">
+        <!-- query panel -->
+        <div class="cpanel">
+          <div class="cpanel-title">
+            <h3>Query</h3>
+            <span class="badge" id="fitScore">tag model</span>
+          </div>
+          <label class="field-label" for="jdInput">Paste a job description</label>
+          <textarea class="jd" id="jdInput" rows="6" aria-describedby="modelStatus"
+            placeholder="e.g. &ldquo;ML intern — Python, data pipelines, embeddings, model evaluation…&rdquo; The full page re-ranks as you type."></textarea>
+          <div class="jd-row">
+            <div class="samples" role="group" aria-label="Sample job descriptions">
+              <button class="sample" type="button" data-sample="ml">try: ML intern</button>
+              <button class="sample" type="button" data-sample="data">data backend</button>
+              <button class="sample" type="button" data-sample="mobile">mobile</button>
+            </div>
+            <button class="jd-clear" type="button" id="jdClear">clear</button>
+          </div>
+          <p class="model-status" id="modelStatus" data-state="idle"><i aria-hidden="true"></i><span id="modelStatusText" aria-live="polite">model loads on first input · ~23 MB once, then cached</span></p>
+          <div class="model-bar" id="modelBar" aria-hidden="true"><i></i></div>
+          <hr class="divider">
+          <span class="field-label" id="fallback-label">Fallback: tag model</span>
+          <div class="preset-grid" role="group" aria-labelledby="fallback-label">
+            <button class="preset active" type="button" data-preset="ml">ML intern</button>
+            <button class="preset" type="button" data-preset="llm">LLM apps</button>
+            <button class="preset" type="button" data-preset="data">data backend</button>
+            <button class="preset" type="button" data-preset="general">generalist</button>
+          </div>
+          <div class="chip-wrap" id="chipWrap" role="group" aria-label="Skills needed">
+            <button class="chip" type="button" data-tag="ml" aria-pressed="true"><i aria-hidden="true"></i>ML</button>
+            <button class="chip" type="button" data-tag="python" aria-pressed="true"><i aria-hidden="true"></i>Python</button>
+            <button class="chip" type="button" data-tag="llm" aria-pressed="true"><i aria-hidden="true"></i>LLM</button>
+            <button class="chip" type="button" data-tag="data" aria-pressed="true"><i aria-hidden="true"></i>Data</button>
+            <button class="chip" type="button" data-tag="backend" aria-pressed="false"><i aria-hidden="true"></i>Backend</button>
+            <button class="chip" type="button" data-tag="sql" aria-pressed="false"><i aria-hidden="true"></i>SQL</button>
+            <button class="chip" type="button" data-tag="frontend" aria-pressed="false"><i aria-hidden="true"></i>Frontend</button>
+            <button class="chip" type="button" data-tag="mobile" aria-pressed="false"><i aria-hidden="true"></i>Mobile</button>
+            <button class="chip" type="button" data-tag="iot" aria-pressed="false"><i aria-hidden="true"></i>IoT</button>
+            <button class="chip" type="button" data-tag="writing" aria-pressed="false"><i aria-hidden="true"></i>Writing</button>
+            <button class="chip" type="button" data-tag="team" aria-pressed="false"><i aria-hidden="true"></i>Teamwork</button>
+          </div>
+          <p class="chip-note" id="chipNote" aria-live="polite"></p>
+        </div>
+        <!-- map panel -->
+        <div class="cpanel map-panel">
+          <div class="cpanel-title">
+            <h3>Skill space</h3>
+            <span class="mono" id="mapProj" style="font-size:11px;color:var(--ink-3)">projection: PCA of tag weights (11-d → 2-d)</span>
+          </div>
+          <div class="map-frame frame">
+            <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
+            <svg id="mapSvg" viewBox="0 0 640 460" role="img" aria-label="Skill-space map: a 2-D projection of project embeddings. When a job description is pasted, it appears as an orange point and dashed lines connect it to the closest projects. The same ranking appears as the card list below."></svg>
+          </div>
+          <div class="map-legend">
+            <span class="lb"><i></i>projects &amp; experience</span>
+            <span class="lo"><i></i>your job description</span>
+            <span id="mapHint">hover a point · click for the case study</span>
+          </div>
+        </div>
+        <!-- output panel -->
+        <div class="cpanel">
+          <div class="cpanel-title">
+            <h3>Output</h3>
+            <span class="mono" id="selectedCount" style="font-size:11px;color:var(--ink-3)" aria-live="polite">4 tags selected</span>
+          </div>
+          <div id="matchesPanel" hidden>
+            <span class="field-label">closest work · cosine</span>
+            <div class="match-list" id="matchList"></div>
+          </div>
+          <div id="weightsPanel">
+            <span class="field-label">tag weights</span>
+            <div class="weight-list" id="weightList"></div>
+          </div>
+          <div class="pitch-block">
+            <span class="field-label">generated pitch</span>
+            <p class="pitch done" id="pitchText" aria-live="polite"></p>
+            <button class="btn quiet" type="button" id="copyPitch" style="min-height:38px;font-size:13px">Copy pitch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ evidence ============ -->
+  <section class="wrap section" id="evidence" aria-labelledby="evidence-title">
+    <div class="section-head">
+      <div>
+        <span class="fig-kicker">ranked evidence</span>
+        <h2 id="evidence-title">Strongest signals surface first.</h2>
+      </div>
+      <p>Order, gauges, and bullet emphasis update live from the console — tag model by default, MiniLM embeddings when a job description is pasted. Raw scores shown; click any card for the case study.</p>
+    </div>
+    <div class="rank-grid" id="signalGrid">
+      <noscript>
+        <div class="nojs" style="grid-column:1/-1">
+          JavaScript is off, so the live ranking is paused. The plain list:
+          <ul>
+            <li><b>Code Driven Labs</b> — Software Engineering Intern (current)</li>
+            <li><b>InSync</b> — Chrome extension: LLM tab-grouping · Python, FastAPI, Groq</li>
+            <li><b>AWS Machine Learning Workshop</b> — hands-on ML training, 2023</li>
+            <li><b>Prompt Engineering in AI Models</b> — independent article, 200-prompt study</li>
+            <li><b>Wade Maritime Pvt. Ltd.</b> — Backend Intern, 2024 · FastAPI, PostgreSQL</li>
+            <li><b>Automatic Irrigation System</b> — Arduino + IoT sensors · IIT Bombay showcase</li>
+            <li><b>MolCraft</b> — Flutter app on Google Play · 3-D chemistry models</li>
+            <li><b>Solutions 1313</b> — Frontend Intern, 2022</li>
+          </ul>
+        </div>
+      </noscript>
+    </div>
+    <div class="rule-ticks" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ trajectory ============ -->
+  <section class="wrap section" id="trajectory" aria-labelledby="trajectory-title">
+    <div class="section-head">
+      <div>
+        <span class="fig-kicker">fig. 03 — trajectory</span>
+        <h2 id="trajectory-title">Shipping since 2022.</h2>
+      </div>
+      <p>Dated roles only — solid bars are exact ranges; the dashed marker is the current internship (start shown approximately).</p>
+    </div>
+    <div class="tl-frame frame reveal" id="tlFrame">
+      <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
+      <div id="timeline" role="img" aria-label="Timeline from 2022 to 2027: Solutions 1313 frontend internship mid-2022, AWS Machine Learning Workshop mid-2023, Wade Maritime backend internship mid-2024, University of Waterloo Bachelor of Computer Science from late 2025 onward, and the current Code Driven Labs software engineering internship in 2026."></div>
+    </div>
+  </section>
+
+  <!-- ============ skills ============ -->
+  <section class="wrap section" aria-labelledby="skills-title">
+    <div class="section-head">
+      <div>
+        <span class="fig-kicker">skill map</span>
+        <h2 id="skills-title">Foundations that transfer.</h2>
+      </div>
+      <p>An honest early-stage profile: strong fundamentals, hands-on ML exposure, and a clear direction toward applied ML engineering.</p>
+    </div>
+    <div class="skills-band reveal">
+      <div class="skill-block"><h3>ML foundations</h3><p>Data preprocessing, feature selection, decision trees, model evaluation, hyperparameter tuning, cross-validation.</p></div>
+      <div class="skill-block"><h3>LLM applications</h3><p>FastAPI-backed LLM workflows, prompt testing, uncertainty-aware categorization, caching for API efficiency.</p></div>
+      <div class="skill-block"><h3>Software systems</h3><p>Python, FastAPI, PostgreSQL, Pydantic, Chrome APIs, HTML, CSS, JavaScript, debugging in production-style codebases.</p></div>
+      <div class="skill-block"><h3>Product range</h3><p>Mobile app publishing, Figma design, Arduino sensor systems, technical writing, code reviews, and standups.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ resume ============ -->
+  <section class="wrap section" id="resume" aria-labelledby="resume-title">
+    <div class="section-head">
+      <div>
+        <span class="fig-kicker">output — tailored artifact</span>
+        <h2 id="resume-title">The resume rebuilds itself.</h2>
+      </div>
+      <p>Same facts, re-prioritized. With a job description active, projects <em>and individual bullets</em> reorder by semantic similarity. Export is a clean, printable HTML file.</p>
+    </div>
+    <div class="resume-zone">
+      <article class="paper" id="resumePaper" aria-label="Tailored resume preview"></article>
+      <aside class="resume-actions">
+        <h3>Resume output</h3>
+        <p>The current ranking chooses the focus line, reorders the evidence, and picks which bullets lead.</p>
+        <div class="action-stack">
+          <button class="btn primary" type="button" id="exportResume">Export tailored resume</button>
+          <button class="btn" type="button" id="printResume">Print resume</button>
+        </div>
+        <p class="resume-mode">source of ranking: <b id="resumeMode">tag model</b></p>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap footer">
+  <div>Navraj Singh Gill · University of Waterloo CS · <a href="mailto:ns8gill@uwaterloo.ca">ns8gill@uwaterloo.ca</a> · <a href="https://github.com/Navraj-bite" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/navrajsgill" target="_blank" rel="noopener">LinkedIn</a></div>
+  <p class="colophon">Colophon: one HTML file, no frameworks, no build. Semantic ranking is Xenova/all-MiniLM-L6-v2 (384-d, quantized) running in your browser via transformers.js; the 2-D skill space is PCA by power iteration, written from scratch; re-ranking uses the View Transitions API with a manual FLIP fallback. If the model can't load, a transparent tag model takes over and says so. View source — it's all here.</p>
+</footer>
+
+<dialog class="case" id="caseDialog" aria-labelledby="dlgTitle">
+  <div class="dlg-inner">
+    <div class="dlg-head">
+      <span class="fig-kicker" id="dlgKind">case file</span>
+      <button class="dlg-x" type="button" id="dlgClose" aria-label="Close case study">✕</button>
+    </div>
+    <h3 id="dlgTitle"></h3>
+    <p class="role mono" id="dlgRole"></p>
+    <p class="dlg-fit mono" id="dlgFit"></p>
+    <div id="dlgBody"></div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   0 · helpers
+===================================================================== */
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+const esc=t=>String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const RMQ=window.matchMedia?window.matchMedia("(prefers-reduced-motion: reduce)"):{matches:false};
+const RM=()=>RMQ.matches;
+const raf=window.requestAnimationFrame?window.requestAnimationFrame.bind(window):(cb=>setTimeout(()=>cb(Date.now()),16));
+const debounce=(fn,ms)=>{let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};};
+const store={
+  get(k){try{return JSON.parse(localStorage.getItem(k)||"null");}catch(e){return null;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+};
+function djb2(str){let h=5381;for(let i=0;i<str.length;i++)h=((h<<5)+h+str.charCodeAt(i))>>>0;return h.toString(36);}
+
+/* =====================================================================
+   1 · data (all real; nothing generated)
+===================================================================== */
+const LABELS={ml:"machine learning",python:"Python",llm:"LLM applications",data:"data work",backend:"backend engineering",sql:"SQL",frontend:"frontend",mobile:"mobile",iot:"IoT sensors",writing:"technical writing",team:"team collaboration"};
+const TAGKEYS=Object.keys(LABELS);
+const PRESETS={ml:["ml","python","llm","data"],llm:["llm","python","backend","writing"],data:["backend","sql","python","data","team"],general:["ml","python","llm","data","backend","frontend","team","writing"]};
+const MODEL_ID="Xenova/all-MiniLM-L6-v2";
+
+const SIGNALS=[
+  {
+    id:"cdl",title:"Code Driven Labs",kind:"Experience",role:"Software Engineering Intern | current",
+    tags:["backend","team","python"],weights:{backend:2,team:2,python:1},
+    bullets:[
+      ["Shipping features and fixes as a software engineering intern on a production codebase, working through implementation, review, and iteration with the team.",["backend","team"]],
+      ["Day-to-day practice with real engineering process: code review, tickets, and collaborating inside standards I didn't write.",["team"]]
+    ],
+    cs:{
+      problem:"Real product, real users — the internship is ongoing, so specifics stay off the public site.",
+      approach:"Contributing as part of the engineering team: implementation, code review, and iterating with feedback in a production environment.",
+      notes:["Happy to walk through the actual work in an interview — the rest of this site is the pre-reading."],
+      stack:["Software engineering","Code review","Team process"],links:[]
+    }
+  },
+  {
+    id:"insync",title:"InSync",kind:"Project",role:"Python | FastAPI | Groq LLM | Chrome API",
+    tags:["llm","ml","python","backend","data"],weights:{llm:3,ml:2,python:2,backend:2,data:1},
+    bullets:[
+      ["Built a Chrome extension with a FastAPI backend that uses an LLM to categorize open browser tabs into color-coded native Chrome groups.",["llm","backend","python"]],
+      ["Added caching to reduce repeated API calls and uncertainty-aware logic to flag tabs that do not fit clearly into any category.",["llm","ml","data"]],
+      ["Pulled live tab metadata and used local storage so groupings stay up to date across browser sessions.",["backend","data"]]
+    ],
+    cs:{
+      problem:"Dozens of open tabs, and manual grouping doesn't keep up — deciding where a tab belongs is exactly the kind of judgment call a small LLM handles well.",
+      approach:"A Chrome extension reads open-tab metadata and sends it to a FastAPI backend, which prompts a Groq-hosted LLM to assign each tab to a color-coded native Chrome tab group.",
+      notes:["Caching keys on tab metadata so already-classified tabs never re-bill the API.","Uncertainty-aware path: low-confidence classifications get flagged instead of silently mis-grouped.","Local storage keeps groupings stable across browser sessions."],
+      stack:["Python","FastAPI","Groq LLM API","Chrome extensions API","JavaScript"],
+      links:[{label:"github.com/Navraj-bite",href:"https://github.com/Navraj-bite"}]
+    }
+  },
+  {
+    id:"aws",title:"AWS Machine Learning Workshop",kind:"Training",role:"Hands-on ML program | June–Aug. 2023",
+    tags:["ml","python","data","team"],weights:{ml:3,python:2,data:2,team:1},
+    bullets:[
+      ["Worked through machine learning fundamentals including preprocessing, feature selection, model training, and evaluation.",["ml","data"]],
+      ["Built a decision tree classifier in Python and explored hyperparameter tuning and cross-validation.",["ml","python"]],
+      ["Gained introductory exposure to cloud-based ML tooling and team-based technical learning environments.",["ml","team"]]
+    ],
+    cs:{
+      problem:"Get past tutorial-level ML: work the full loop from raw data to an evaluated model.",
+      approach:"A hands-on program covering preprocessing, feature selection, training, and evaluation — culminating in a decision-tree classifier built in Python.",
+      notes:["Used hyperparameter tuning and cross-validation rather than a single train/test split.","First exposure to cloud-based ML tooling and learning in a team setting."],
+      stack:["Python","Decision trees","Cross-validation","AWS tooling"],links:[]
+    }
+  },
+  {
+    id:"prompt",title:"Prompt Engineering in AI Models",kind:"Writing",role:"Independent article | self-directed study",
+    tags:["llm","writing","ml","data"],weights:{llm:3,writing:3,ml:2,data:1},
+    bullets:[
+      ["Tested 200 prompts across six prompting techniques to study how prompt style affects response quality.",["llm","data","writing"]],
+      ["Mapped common AI response failure modes and wrote a practical analysis of prompt design behavior.",["llm","ml","writing"]]
+    ],
+    cs:{
+      problem:"Most prompting advice is vibes — I wanted conclusions from actually running the experiments.",
+      approach:"Tested 200 prompts across six prompting techniques, compared response quality, and wrote the patterns up as a practical article.",
+      notes:["Mapped recurring failure modes and when each technique actually helps.","Writing it up forced precision — the article doubles as a communication sample."],
+      stack:["LLMs","Prompt design","Experiment design","Technical writing"],links:[]
+    }
+  },
+  {
+    id:"wade",title:"Wade Maritime Pvt. Ltd.",kind:"Experience",role:"Backend Intern | Apr.–Jul. 2024",
+    tags:["backend","sql","python","team","data"],weights:{backend:3,sql:3,python:2,team:2,data:2},
+    bullets:[
+      ["Contributed to backend development by writing and adjusting PostgreSQL queries for internal reporting dashboards.",["backend","sql","data"]],
+      ["Helped build Python FastAPI endpoints with input validation handled through Pydantic models.",["backend","python"]],
+      ["Worked through bug tickets, code cleanup, daily standups, and code reviews in a production codebase.",["team","backend"]]
+    ],
+    cs:{
+      problem:"Internal reporting dashboards needed reliable data and endpoints inside a production backend.",
+      approach:"Wrote and adjusted PostgreSQL queries feeding reporting dashboards, and built FastAPI endpoints with Pydantic input validation.",
+      notes:["Worked the normal production loop: bug tickets, cleanup, daily standups, code review.","First sustained experience navigating a codebase I didn't write."],
+      stack:["Python","FastAPI","Pydantic","PostgreSQL","SQL"],links:[]
+    }
+  },
+  {
+    id:"irrigation",title:"Automatic Irrigation System",kind:"Project",role:"Arduino | IoT sensors | IIT Bombay showcase",
+    tags:["iot","data","ml","team"],weights:{iot:3,data:2,ml:1,team:1},
+    bullets:[
+      ["Built an Arduino setup with soil moisture, humidity, rain, and light sensors to automate watering for drought-prone plots.",["iot","data"]],
+      ["Implemented sensor-driven pump control logic and data logging to track watering patterns over time.",["iot","data"]],
+      ["Shortlisted among 15 teams nationally to present at an IoT showcase hosted at IIT Bombay.",["team"]]
+    ],
+    cs:{
+      problem:"Drought-prone plots waste water on fixed schedules — watering should respond to what the soil actually reports.",
+      approach:"An Arduino system reading soil-moisture, humidity, rain, and light sensors drives pump-control logic, with data logging to track watering patterns over time.",
+      notes:["Shortlisted among 15 teams nationally to present at an IoT showcase hosted at IIT Bombay."],
+      stack:["Arduino / C++","Environment sensors","Control logic","Data logging"],links:[]
+    }
+  },
+  {
+    id:"molcraft",title:"MolCraft",kind:"Project",role:"Flutter | Figma | Google Play Store",
+    tags:["mobile","frontend","data"],weights:{mobile:3,frontend:2,data:1},
+    bullets:[
+      ["Developed and published a Flutter app on the Google Play Store with interactive 3D models of common chemistry molecules.",["mobile"]],
+      ["Designed the interface in Figma, translating 2D textbook diagrams into touch-controlled 3D structures for students.",["frontend","mobile"]]
+    ],
+    cs:{
+      problem:"Chemistry textbooks flatten molecules into 2-D — students lose the geometry that makes structures make sense.",
+      approach:"A Flutter app with interactive, touch-controlled 3-D models of common molecules, designed in Figma and published on the Google Play Store.",
+      notes:["Translating 2-D diagrams into manipulable 3-D structures was the core design problem.","Shipped end-to-end: design → build → store listing."],
+      stack:["Flutter / Dart","Figma","Google Play publishing"],links:[]
+    }
+  },
+  {
+    id:"s1313",title:"Solutions 1313",kind:"Experience",role:"Frontend Intern | May–Aug. 2022",
+    tags:["frontend","team"],weights:{frontend:3,team:1},
+    bullets:[
+      ["Contributed frontend components for client websites using HTML, CSS, and JavaScript.",["frontend"]],
+      ["Adjusted existing JavaScript to improve consistency across browsers and screen sizes.",["frontend"]],
+      ["Used Chrome DevTools to investigate and resolve UI and responsiveness issues.",["frontend","team"]]
+    ],
+    cs:{
+      problem:"Client sites needed consistent behavior across browsers and screen sizes.",
+      approach:"Built and adjusted frontend components in HTML, CSS, and JavaScript for client websites.",
+      notes:["Used Chrome DevTools to chase down UI and responsiveness bugs.","First internship — learned to ship inside someone else's standards."],
+      stack:["HTML","CSS","JavaScript","Chrome DevTools"],links:[]
+    }
+  }
+];
+const SAMPLE_JDS={
+  ml:"ML Engineering Intern — build and evaluate machine learning models in Python; data preprocessing, feature engineering, model training and cross-validation; experience with embeddings, sentence transformers, or LLM APIs is a plus; communicate results clearly in writing.",
+  data:"Backend / Data Intern — design REST APIs with Python (FastAPI or Flask); write efficient SQL and PostgreSQL queries for reporting; validate data models; collaborate in an agile team with code reviews and standups.",
+  mobile:"Mobile Product Intern — ship user-facing features in Flutter; translate Figma designs into polished, responsive UI; publish and iterate on app-store releases; care about interaction detail."
+};
+const embedInput=s=>`${s.title} — ${s.kind}. ${s.role}. ${s.bullets.map(b=>b[0]).join(" ")} Skills: ${s.tags.map(t=>LABELS[t]).join(", ")}.`;
+
+/* =====================================================================
+   2 · state + element handles
+===================================================================== */
+const state={
+  mode:"chips",            // "chips" | "semantic"
+  jdVec:null,jdText:"",
+  embedder:null,modelLoading:null,modelFailed:false,
+  vecs:null,               // {proj:{id:vec}, bul:{id:[vec]}}
+  basis:{},                // cached PCA bases per mode
+  topCos:null,topTitle:null,
+  ranked:[],
+};
+const el={
+  jd:$("#jdInput"),jdClear:$("#jdClear"),
+  status:$("#modelStatus"),statusText:$("#modelStatusText"),bar:$("#modelBar"),barFill:$("#modelBar i"),
+  chips:$$(".chip"),presets:$$(".preset"),chipNote:$("#chipNote"),
+  fitScore:$("#fitScore"),selectedCount:$("#selectedCount"),
+  grid:$("#signalGrid"),map:$("#mapSvg"),mapProj:$("#mapProj"),
+  matchesPanel:$("#matchesPanel"),matchList:$("#matchList"),
+  weightsPanel:$("#weightsPanel"),weightList:$("#weightList"),
+  pitch:$("#pitchText"),
+  heroFit:$("#heroFit"),heroFitLab:$("#heroFitLab"),heroSignals:$("#heroSignals"),heroFocus:$("#heroFocus"),
+  paper:$("#resumePaper"),resumeMode:$("#resumeMode"),
+  dlg:$("#caseDialog"),dlgKind:$("#dlgKind"),dlgTitle:$("#dlgTitle"),dlgRole:$("#dlgRole"),dlgFit:$("#dlgFit"),dlgBody:$("#dlgBody"),
+  toast:$("#toast"),mechCap:$("#mechCap"),
+};
+
+/* =====================================================================
+   3 · linear algebra (from scratch, on purpose)
+===================================================================== */
+function dot(a,b){let s=0;for(let i=0;i<a.length;i++)s+=a[i]*b[i];return s;}
+function norm(v){return Math.sqrt(dot(v,v));}
+function normalize(v){const n=norm(v)||1;for(let i=0;i<v.length;i++)v[i]/=n;return v;}
+const cosine=(a,b)=>dot(a,b)/((norm(a)*norm(b))||1);
+
+/* top-2 principal components via power iteration + deflation */
+function pca2(rows){
+  const n=rows.length,d=rows[0].length;
+  const mean=new Float64Array(d);
+  for(const r of rows)for(let j=0;j<d;j++)mean[j]+=r[j];
+  for(let j=0;j<d;j++)mean[j]/=n;
+  const X=rows.map(r=>{const c=new Float64Array(d);for(let j=0;j<d;j++)c[j]=r[j]-mean[j];return c;});
+  const comp=M=>{
+    let v=new Float64Array(d);
+    for(let j=0;j<d;j++)v[j]=Math.sin((j+1)*12.9898)*43758.5453%1;   /* deterministic seed */
+    normalize(v);
+    for(let it=0;it<64;it++){
+      const w=new Float64Array(d);
+      for(let i=0;i<n;i++){const xi=M[i];let s=0;for(let j=0;j<d;j++)s+=xi[j]*v[j];for(let j=0;j<d;j++)w[j]+=xi[j]*s;}
+      if(norm(w)<1e-12)break;
+      normalize(w);v=w;
+    }
+    return v;
+  };
+  const v1=comp(X);
+  const X2=X.map(xi=>{const s=dot(xi,v1);const c=new Float64Array(d);for(let j=0;j<d;j++)c[j]=xi[j]-s*v1[j];return c;});
+  const v2=comp(X2);
+  return {mean:Array.from(mean),v1:Array.from(v1),v2:Array.from(v2)};
+}
+const project2=(vec,B)=>{let a=0,b=0;for(let j=0;j<vec.length;j++){const c=vec[j]-B.mean[j];a+=c*B.v1[j];b+=c*B.v2[j];}return[a,b];};
+
+/* tag-space vectors (fallback geometry — also real, just simpler) */
+const tagVec=s=>normalize(TAGKEYS.map(t=>s.weights[t]||0));
+const TAG_VECS={};SIGNALS.forEach(s=>{TAG_VECS[s.id]=tagVec(s);});
+
+/* =====================================================================
+   4 · the real model — transformers.js, lazy, cached, failure-proof
+===================================================================== */
+function setStatus(stateName,text){
+  el.status.dataset.state=stateName;
+  el.statusText.textContent=text;
+  if(stateName!=="loading"){el.bar.classList.remove("on");el.barFill.style.width="0";}
+}
+function setProgress(p){
+  el.bar.classList.add("on");
+  el.barFill.style.width=clamp(p||0,0,100)+"%";
+}
+async function ensureModel(){
+  if(state.embedder)return state.embedder;
+  if(state.modelFailed)return null;
+  if(state.modelLoading)return state.modelLoading;
+  state.modelLoading=(async()=>{
+    try{
+      setStatus("loading","fetching runtime…");
+      let mod;
+      try{mod=await import("https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2");}
+      catch(e){mod=await import("https://unpkg.com/@xenova/transformers@2.17.2");}
+      mod.env.allowLocalModels=false;
+      mod.env.useBrowserCache=true;
+      setStatus("loading","downloading MiniLM-L6-v2 · cached after first load");
+      const embedder=await mod.pipeline("feature-extraction",MODEL_ID,{
+        progress_callback:p=>{if(p&&p.status==="progress"&&/onnx/i.test(p.file||""))setProgress(p.progress);}
+      });
+      state.embedder=embedder;
+      setStatus("ready","MiniLM-L6-v2 · 384-d · quantized · running in your browser");
+      return embedder;
+    }catch(err){
+      state.modelFailed=true;
+      setStatus("fallback","semantic model unavailable here — tag model active");
+      console.info("[portfolio] semantic model unavailable, tag fallback active:",err&&err.message||err);
+      return null;
+    }finally{state.modelLoading=null;}
+  })();
+  return state.modelLoading;
+}
+async function embedBatch(texts){
+  const out=await state.embedder(texts,{pooling:"mean",normalize:true});
+  const [n,d]=out.dims;
+  const res=[];
+  for(let i=0;i<n;i++)res.push(Array.from(out.data.slice(i*d,(i+1)*d),x=>Math.round(x*1e5)/1e5));
+  return res;
+}
+async function ensureCorpus(){
+  if(state.vecs)return state.vecs;
+  const texts=SIGNALS.map(embedInput);
+  const btexts=SIGNALS.flatMap(s=>s.bullets.map(b=>b[0]));
+  const key="njg-emb-v1";
+  const hash=djb2(texts.join("|")+"~"+btexts.join("|")+"~"+MODEL_ID);
+  const cached=store.get(key);
+  if(cached&&cached.h===hash){state.vecs={proj:cached.p,bul:cached.b};return state.vecs;}
+  if(!await ensureModel())return null;
+  setStatus("loading","embedding portfolio corpus…");
+  const pv=await embedBatch(texts);
+  const bv=await embedBatch(btexts);
+  const proj={},bul={};let k=0;
+  SIGNALS.forEach((s,i)=>{proj[s.id]=pv[i];bul[s.id]=s.bullets.map(()=>bv[k++]);});
+  state.vecs={proj,bul};
+  store.set(key,{h:hash,p:proj,b:bul});
+  setStatus("ready","MiniLM-L6-v2 · 384-d · quantized · running in your browser");
+  return state.vecs;
+}
+
+/* =====================================================================
+   5 · ranking (both modes return the same row shape)
+===================================================================== */
+const selectedTags=()=>el.chips.filter(c=>c.getAttribute("aria-pressed")==="true").map(c=>c.dataset.tag);
+function rankChips(tags){
+  const max=Math.max(1,tags.length*3);
+  const rows=SIGNALS.map(s=>{
+    const score=tags.reduce((sum,t)=>sum+(s.weights[t]||0),0);
+    return {s,score,cos:null,pct:Math.min(100,Math.round(score/max*100))};
+  }).sort((a,b)=>b.score-a.score||a.s.title.localeCompare(b.s.title));
+  rows.forEach((r,i)=>{r.hot=r.score>0&&i<3;r.dim=tags.length>0&&r.score===0;});
+  return rows;
+}
+function rankSemantic(){
+  const rows=SIGNALS.map(s=>({s,cos:dot(state.jdVec,state.vecs.proj[s.id]),score:0}));
+  rows.sort((a,b)=>b.cos-a.cos);
+  const lo=rows[rows.length-1].cos,hi=rows[0].cos,span=Math.max(1e-6,hi-lo);
+  rows.forEach((r,i)=>{
+    r.pct=Math.round(8+((r.cos-lo)/span)*89);
+    r.hot=i<3&&r.cos>0.2;
+    r.dim=r.cos<0.15;
+  });
+  return rows;
+}
+function bulletOrder(s,tags,semantic){
+  const idx=s.bullets.map((_,i)=>i);
+  if(semantic&&state.vecs&&state.vecs.bul[s.id]){
+    return idx.sort((a,b)=>dot(state.jdVec,state.vecs.bul[s.id][b])-dot(state.jdVec,state.vecs.bul[s.id][a]));
+  }
+  return idx.sort((a,b)=>{
+    const hit=i=>s.bullets[i][1].filter(t=>tags.includes(t)).length;
+    return hit(b)-hit(a);
+  });
+}
+
+/* =====================================================================
+   6 · evidence cards — persistent nodes, FLIP / View Transitions
+===================================================================== */
+const ARC=81.7; /* semicircle length, r = 26 */
+const cardNodes={},bulletNodes={};
+function buildCards(){
+  for(const s of SIGNALS){
+    const card=document.createElement("article");
+    card.className="signal-card";
+    card.id="card-"+s.id;
+    card.dataset.id=s.id;
+    try{card.style.viewTransitionName="card-"+s.id;}catch(e){}
+    card.innerHTML=`
+      <div class="card-top">
+        <span class="card-kind">${esc(s.kind)}</span>
+        <span class="gauge-wrap">
+          <svg class="gauge" viewBox="0 0 60 34" aria-hidden="true">
+            <path class="g-track" d="M4 30 A26 26 0 0 1 56 30"/>
+            <path class="g-fill" d="M4 30 A26 26 0 0 1 56 30"/>
+          </svg>
+          <span class="g-num">—</span>
+        </span>
+      </div>
+      <h3><button class="card-title" type="button" aria-haspopup="dialog">${esc(s.title)}</button></h3>
+      <p class="role">${esc(s.role)}</p>
+      <ul class="card-bullets"></ul>
+      <div class="tags">${s.tags.map(t=>`<span class="tag" data-tag="${t}">${esc(LABELS[t])}</span>`).join("")}</div>
+      <div class="card-foot"><span class="rawfit">—</span><span class="cue">case study ↗</span></div>`;
+    const ul=card.querySelector(".card-bullets");
+    bulletNodes[s.id]=s.bullets.map(b=>{const li=document.createElement("li");li.textContent=b[0];ul.appendChild(li);return li;});
+    card.addEventListener("click",()=>openCase(s.id,card.querySelector(".card-title")));
+    card.addEventListener("mouseenter",()=>mapHover(s.id,true));
+    card.addEventListener("mouseleave",()=>mapHover(s.id,false));
+    cardNodes[s.id]=card;
+    el.grid.appendChild(card);
+  }
+}
+let vtBusy=false;
+function reorder(mutate){
+  if(RM()){mutate();return;}
+  if(document.startViewTransition&&!vtBusy){
+    vtBusy=true;
+    try{
+      const t=document.startViewTransition(mutate);
+      (t.finished||Promise.resolve()).finally(()=>{vtBusy=false;});
+    }catch(e){vtBusy=false;mutate();}
+    return;
+  }
+  const kids=[...el.grid.children].filter(n=>n.classList&&n.classList.contains("signal-card"));
+  const first=new Map(kids.map(c=>[c,c.getBoundingClientRect()]));
+  mutate();
+  for(const c of kids){
+    const f=first.get(c),l=c.getBoundingClientRect();
+    const dx=f.left-l.left,dy=f.top-l.top;
+    if((dx||dy)&&c.animate)c.animate(
+      [{transform:`translate(${dx}px,${dy}px)`},{transform:"none"}],
+      {duration:520,easing:"cubic-bezier(.22,1,.36,1)"});
+  }
+}
+function updateCards(ranked,semantic,tags){
+  for(const r of ranked){
+    const c=cardNodes[r.s.id];
+    c.classList.toggle("hot",!!r.hot);
+    c.classList.toggle("dim",!!r.dim);
+    c.querySelector(".g-fill").style.strokeDashoffset=(ARC*(1-r.pct/100)).toFixed(1);
+    c.querySelector(".g-num").textContent=r.pct;
+    c.querySelector(".rawfit").textContent=semantic?("cos "+r.cos.toFixed(3)):("tags "+r.score+"/"+Math.max(1,tags.length*3));
+    c.querySelectorAll(".tag").forEach(t=>t.classList.toggle("on",!semantic&&tags.includes(t.dataset.tag)));
+    const ul=c.querySelector(".card-bullets");
+    for(const i of bulletOrder(r.s,tags,semantic))ul.appendChild(bulletNodes[r.s.id][i]);
+    el.grid.appendChild(c);   /* reorder */
+  }
+}
+
+/* =====================================================================
+   7 · fig. 02 — the skill-space map (SVG + springs)
+===================================================================== */
+const MAP={W:640,H:460,PAD:64,pts:{},jd:null,lines:null,running:false,fit:null,mode:null};
+const svgNS="http://www.w3.org/2000/svg";
+function svgEl(tag,attrs){const n=document.createElementNS(svgNS,tag);for(const k in attrs)n.setAttribute(k,attrs[k]);return n;}
+function buildMap(){
+  const svg=el.map;
+  svg.appendChild(svgEl("line",{x1:MAP.PAD,y1:MAP.H-MAP.PAD,x2:MAP.W-MAP.PAD+18,y2:MAP.H-MAP.PAD,stroke:"rgba(18,21,26,.16)","stroke-width":1}));
+  svg.appendChild(svgEl("line",{x1:MAP.PAD,y1:MAP.H-MAP.PAD,x2:MAP.PAD,y2:MAP.PAD-18,stroke:"rgba(18,21,26,.16)","stroke-width":1}));
+  const xl=svgEl("text",{x:MAP.W-MAP.PAD+8,y:MAP.H-MAP.PAD+16,class:"axis-lab"});xl.textContent="pc-1";svg.appendChild(xl);
+  const yl=svgEl("text",{x:MAP.PAD-10,y:MAP.PAD-24,class:"axis-lab"});yl.textContent="pc-2";svg.appendChild(yl);
+  MAP.lines=svgEl("g",{});svg.appendChild(MAP.lines);
+  SIGNALS.forEach((s,i)=>{
+    const g=svgEl("g",{class:"pt",tabindex:"0",role:"button","data-id":s.id});
+    g.setAttribute("aria-label",s.title+" — "+s.kind+". Press Enter to open the case study.");
+    g.appendChild(svgEl("circle",{class:"dot",r:7,cx:0,cy:0}));
+    const lab=svgEl("text",{x:11,y:i%2?16:-9});lab.textContent=s.title;g.appendChild(lab);
+    g.addEventListener("click",()=>openCase(s.id,g));
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();openCase(s.id,g);}});
+    g.addEventListener("mouseenter",()=>{if(cardNodes[s.id])cardNodes[s.id].classList.add("hover-src");});
+    g.addEventListener("mouseleave",()=>{if(cardNodes[s.id])cardNodes[s.id].classList.remove("hover-src");});
+    svg.appendChild(g);
+    MAP.pts[s.id]={g,x:MAP.W/2,y:MAP.H/2,vx:0,vy:0,tx:MAP.W/2,ty:MAP.H/2};
+  });
+  const jd=svgEl("g",{id:"jdPt",visibility:"hidden"});
+  jd.appendChild(svgEl("circle",{class:"halo",r:9,cx:0,cy:0}));
+  jd.appendChild(svgEl("circle",{class:"core",r:7,cx:0,cy:0}));
+  const jl=svgEl("text",{x:12,y:-10});jl.textContent="your job description";jd.appendChild(jl);
+  svg.appendChild(jd);
+  MAP.jd={g:jd,x:MAP.W/2,y:MAP.H/2,vx:0,vy:0,tx:MAP.W/2,ty:MAP.H/2,on:false};
+}
+function mapHover(id,on){const p=MAP.pts[id];if(p)p.g.classList.toggle("hover",on);}
+function fitTransform(coords){
+  let minx=1/0,maxx=-1/0,miny=1/0,maxy=-1/0;
+  for(const c of coords){minx=Math.min(minx,c[0]);maxx=Math.max(maxx,c[0]);miny=Math.min(miny,c[1]);maxy=Math.max(maxy,c[1]);}
+  const span=Math.max(maxx-minx,maxy-miny,1e-9);
+  const s=(Math.min(MAP.W,MAP.H)-2*MAP.PAD)/span;
+  const cx=(minx+maxx)/2,cy=(miny+maxy)/2;
+  return c=>[MAP.W/2+(c[0]-cx)*s,MAP.H/2-(c[1]-cy)*s];
+}
+function layoutMap(semantic,ranked){
+  const modeKey=semantic?"sem":"tag";
+  const vecs=semantic?state.vecs.proj:TAG_VECS;
+  if(!state.basis[modeKey])state.basis[modeKey]=pca2(SIGNALS.map(s=>vecs[s.id]));
+  const B=state.basis[modeKey];
+  if(MAP.mode!==modeKey||!MAP.fit){
+    MAP.fit=fitTransform(SIGNALS.map(s=>project2(vecs[s.id],B)));
+    MAP.mode=modeKey;
+    el.mapProj.textContent=semantic?"projection: PCA of MiniLM embeddings (384-d → 2-d)":"projection: PCA of tag weights (11-d → 2-d)";
+  }
+  for(const s of SIGNALS){
+    const t=MAP.fit(project2(vecs[s.id],B));
+    MAP.pts[s.id].tx=t[0];MAP.pts[s.id].ty=t[1];
+  }
+  const top3=ranked.slice(0,3).filter(r=>r.hot).map(r=>r.s.id);
+  for(const s of SIGNALS)MAP.pts[s.id].g.classList.toggle("hot",top3.includes(s.id));
+  if(semantic&&state.jdVec){
+    const jt=MAP.fit(project2(state.jdVec,B));
+    const m=MAP.PAD*0.55;
+    const clamped=jt[0]<m||jt[0]>MAP.W-m||jt[1]<m||jt[1]>MAP.H-m;
+    MAP.jd.tx=clamp(jt[0],m,MAP.W-m);MAP.jd.ty=clamp(jt[1],m,MAP.H-m);
+    if(!MAP.jd.on){MAP.jd.x=MAP.jd.tx;MAP.jd.y=MAP.jd.ty;MAP.jd.on=true;}
+    MAP.jd.g.setAttribute("visibility","visible");
+    MAP.jd.g.classList.toggle("pulse",!RM());
+    MAP.jd.g.style.opacity=clamped?".7":"1";
+    drawNN(top3);
+  }else{
+    MAP.jd.on=false;
+    MAP.jd.g.setAttribute("visibility","hidden");
+    while(MAP.lines.firstChild)MAP.lines.removeChild(MAP.lines.firstChild);
+  }
+  startSprings();
+}
+function drawNN(ids){
+  while(MAP.lines.firstChild)MAP.lines.removeChild(MAP.lines.firstChild);
+  for(const id of ids){
+    const l=svgEl("line",{class:"nnline",x1:MAP.jd.x,y1:MAP.jd.y,x2:MAP.pts[id].x,y2:MAP.pts[id].y});
+    l.dataset.to=id;
+    MAP.lines.appendChild(l);
+  }
+}
+function applyXY(p){p.g.setAttribute("transform","translate("+p.x.toFixed(2)+","+p.y.toFixed(2)+")");}
+function startSprings(){
+  if(RM()){
+    for(const id in MAP.pts){const p=MAP.pts[id];p.x=p.tx;p.y=p.ty;p.vx=0;p.vy=0;applyXY(p);}
+    if(MAP.jd.on){MAP.jd.x=MAP.jd.tx;MAP.jd.y=MAP.jd.ty;applyXY(MAP.jd);}
+    syncNN();return;
+  }
+  if(MAP.running)return;
+  MAP.running=true;
+  let last=performance.now();
+  const K=150,D=21;
+  const step=now=>{
+    const dt=Math.min(1/30,(now-last)/1000)||1/60;last=now;
+    let alive=false;
+    const move=p=>{
+      const ax=(p.tx-p.x)*K-p.vx*D,ay=(p.ty-p.y)*K-p.vy*D;
+      p.vx+=ax*dt;p.vy+=ay*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(Math.abs(p.tx-p.x)>.12||Math.abs(p.ty-p.y)>.12||Math.abs(p.vx)>.12||Math.abs(p.vy)>.12)alive=true;
+      applyXY(p);
+    };
+    for(const id in MAP.pts)move(MAP.pts[id]);
+    if(MAP.jd.on)move(MAP.jd);
+    syncNN();
+    if(alive)raf(step);else MAP.running=false;
+  };
+  raf(step);
+}
+function syncNN(){
+  for(const l of MAP.lines.children){
+    const p=MAP.pts[l.dataset.to];if(!p)continue;
+    l.setAttribute("x1",MAP.jd.x.toFixed(1));l.setAttribute("y1",MAP.jd.y.toFixed(1));
+    l.setAttribute("x2",p.x.toFixed(1));l.setAttribute("y2",p.y.toFixed(1));
+  }
+}
+
+/* =====================================================================
+   8 · output panel + typed pitch
+===================================================================== */
+let typeTok=0;
+function typePitch(text){
+  const tok=++typeTok;
+  el.pitch.classList.remove("done");
+  if(RM()){el.pitch.textContent=text;el.pitch.classList.add("done");return;}
+  el.pitch.textContent="";
+  let i=0;
+  (function step(){
+    if(tok!==typeTok)return;
+    el.pitch.textContent=text.slice(0,++i);
+    if(i<text.length)setTimeout(step,9);
+    else el.pitch.classList.add("done");
+  })();
+}
+const listPhrase=items=>{
+  if(!items.length)return "a broad early-career CS profile";
+  const w=items.map(t=>LABELS[t]);
+  return w.length===1?w[0]:w.slice(0,-1).join(", ")+" and "+w[w.length-1];
+};
+function renderOutput(ranked,semantic,tags){
+  el.matchesPanel.hidden=!semantic;
+  el.weightsPanel.hidden=semantic;
+  if(semantic){
+    el.matchList.innerHTML=ranked.slice(0,5).map((r,i)=>
+      '<div class="match-row '+(i===0?"top":"")+'">'+
+      '<span class="idx">0'+(i+1)+'</span><span class="nm">'+esc(r.s.title)+'</span><span class="cs">'+r.cos.toFixed(3)+'</span>'+
+      '<span class="bar"><i style="width:'+r.pct+'%"></i></span></div>').join("");
+    el.selectedCount.textContent="job description override active";
+    el.fitScore.textContent="top cos "+ranked[0].cos.toFixed(2);
+    const a=ranked[0],b=ranked[1],c=ranked[2];
+    typePitch("Against this job description, the closest work is "+a.s.title+" (cos "+a.cos.toFixed(2)+"), then "+b.s.title+" and "+c.s.title+". Ranked by MiniLM sentence embeddings computed in your browser — the resume below is rebuilt to match.");
+  }else{
+    el.weightList.innerHTML=TAGKEYS.map(t=>{
+      const active=tags.includes(t);
+      const prevalence=Math.max(10,Math.round(SIGNALS.reduce((s,x)=>s+(x.weights[t]||0),0)/20*100));
+      return '<div class="weight-row"><span>'+esc(LABELS[t].split(" ")[0])+'</span><span class="track"><i style="width:'+(active?100:prevalence)+'%;opacity:'+(active?1:.32)+'"></i></span><span>'+(active?"1.0":"0.2")+'</span></div>';
+    }).join("");
+    el.selectedCount.textContent=tags.length+" tags selected";
+    const top=ranked.filter(r=>r.score>0).slice(0,3).map(r=>r.s.title);
+    el.fitScore.textContent="tag model";
+    typePitch("For roles emphasizing "+listPhrase(tags)+", the strongest evidence is "+(top.join(", ")||"the project and internship foundation")+". Scores here come from a transparent tag model — paste a real job description above and a sentence-transformer takes over.");
+  }
+}
+function renderHero(ranked,semantic,tags){
+  if(semantic){
+    el.heroFit.textContent=ranked[0].cos.toFixed(2);
+    el.heroFitLab.textContent="top cosine";
+    el.heroSignals.textContent=ranked.filter(r=>r.cos>0.25).length;
+    el.heroFocus.textContent="job description";
+    state.topCos=ranked[0].cos;state.topTitle=ranked[0].s.title;
+    el.mechCap.textContent="Live: cos θ between this job description and \u201C"+state.topTitle+"\u201D = "+state.topCos.toFixed(3)+", measured in 384 dimensions by MiniLM in your browser.";
+  }else{
+    el.heroFit.textContent=(ranked[0].pct/100).toFixed(2);
+    el.heroFitLab.textContent="top tag fit";
+    el.heroSignals.textContent=ranked.filter(r=>r.score>0).length||SIGNALS.length;
+    el.heroFocus.textContent=tags.includes("llm")?"LLM":tags.includes("backend")?"API":tags.includes("mobile")?"APP":"ML";
+    state.topCos=null;state.topTitle=null;
+    el.mechCap.textContent="Every card's fit = cos θ between its embedding and the job description's, measured in 384 dimensions. This is the whole trick; everything else is presentation.";
+  }
+}
+
+/* =====================================================================
+   9 · resume — preview, visible rebuild, export, print
+===================================================================== */
+function renderResume(ranked,semantic,tags){
+  const chosen=(semantic?ranked.filter(r=>r.cos>0.1):ranked.filter(r=>r.score>0)).slice(0,5);
+  const rows=chosen.length?chosen:ranked.slice(0,5);
+  const focus=semantic
+    ?"Tailored to a pasted job description — closest matches: "+rows.slice(0,3).map(r=>r.s.title).join(", ")+"."
+    :"University of Waterloo CS student aiming at ML engineering roles focused on "+listPhrase(tags)+".";
+  const items=rows.map(r=>{
+    const order=bulletOrder(r.s,tags,semantic).slice(0,2);
+    const bl=order.map(i=>"<li>"+esc(r.s.bullets[i][0])+"</li>").join("");
+    return '<div class="paper-item"><strong>'+esc(r.s.title)+"</strong><span>"+esc(r.s.role)+"</span><ul>"+bl+"</ul></div>";
+  }).join("");
+  const skillTags=semantic?[...new Set(rows.flatMap(r=>r.s.tags))]:(tags.length?tags:null);
+  const skillText=skillTags?skillTags.map(t=>LABELS[t]).join(", "):"Python, machine learning fundamentals, FastAPI, PostgreSQL, JavaScript, Flutter, Arduino";
+  el.paper.innerHTML='<h3>Navraj Singh Gill</h3>'+
+    '<div class="contact">ns8gill@uwaterloo.ca | linkedin.com/in/navrajsgill | github.com/Navraj-bite | +1 (548) 350-0910</div>'+
+    '<div class="paper-section"><h4>Profile</h4><ul>'+
+      '<li>'+esc(focus)+'</li>'+
+      '<li>Currently a Software Engineering Intern at Code Driven Labs; hands-on experience across LLM-backed products, ML training, backend internships, and technical writing.</li>'+
+    '</ul></div>'+
+    '<div class="paper-section"><h4>Selected Evidence</h4>'+items+'</div>'+
+    '<div class="paper-section"><h4>Skills</h4><ul><li>'+esc(skillText)+'</li></ul></div>'+
+    '<div class="paper-section"><h4>Education</h4>'+
+      '<div class="paper-item"><strong>University of Waterloo</strong><span>Bachelor of Computer Science candidate | 2025–2030</span>'+
+      '<ul><li>Relevant coursework: algorithm design and data abstraction, software development tools, linear algebra, calculus.</li></ul></div>'+
+    '</div>';
+  el.resumeMode.textContent=semantic?"MiniLM semantic match (cosine similarity)":"tag model ("+tags.length+" tags)";
+  el.paper.classList.remove("flash");
+  void el.paper.offsetWidth;
+  el.paper.classList.add("flash");
+  clearTimeout(renderResume._t);
+  renderResume._t=setTimeout(()=>el.paper.classList.remove("flash"),700);
+}
+function exportResume(){
+  const semantic=state.mode==="semantic"&&!!state.jdVec;
+  const stamp=new Date().toISOString().slice(0,10);
+  const html="<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><title>Navraj Singh Gill — Tailored Resume</title><style>"+
+    "body{font-family:Arial,Helvetica,sans-serif;color:#111;max-width:820px;margin:32px auto;padding:0 22px;line-height:1.35}"+
+    "h1{text-align:center;margin:0;font-size:30px}.contact{text-align:center;color:#444;font-size:12px;margin:4px 0 18px}"+
+    ".paper-section{border-top:1px solid #222;padding-top:8px;margin-top:13px}"+
+    "h4{text-transform:uppercase;font-size:15px;letter-spacing:.08em;margin:0 0 7px}"+
+    ".paper-item{margin-bottom:10px}.paper-item strong{display:block}.paper-item span{display:block;color:#555;font-style:italic;font-size:13px}"+
+    "ul{margin:5px 0 0 20px;padding:0;font-size:13px}li{margin-bottom:4px}"+
+    ".prov{margin-top:22px;color:#777;font-size:10.5px;text-align:center}"+
+    "@media print{body{margin:0 auto}.prov{display:none}}"+
+    "</style></head><body>"+el.paper.innerHTML.replaceAll("h3>","h1>")+
+    "<p class=\"prov\">Generated by the portfolio's matching model ("+(semantic?"MiniLM-L6-v2 semantic ranking":"tag model")+") · "+stamp+"</p>"+
+    "</body></html>";
+  const blob=new Blob([html],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download="navraj-tailored-resume.html";
+  document.body.appendChild(a);a.click();a.remove();
+  URL.revokeObjectURL(url);
+  showToast("Tailored resume exported");
+}
+
+/* =====================================================================
+   10 · fig. 03 — trajectory timeline
+===================================================================== */
+function buildTimeline(){
+  const holder=$("#timeline");if(!holder)return;
+  const X0=2022,X1=2027.2,W=980,H=250,L=16,Rp=16,T=26,rowH=38;
+  const x=t=>L+(t-X0)/(X1-X0)*(W-L-Rp);
+  const rows=[
+    {label:"Solutions 1313",sub:"Frontend Intern",a:2022.37,b:2022.66},
+    {label:"AWS ML Workshop",sub:"hands-on training",a:2023.45,b:2023.66},
+    {label:"Wade Maritime",sub:"Backend Intern",a:2024.29,b:2024.58},
+    {label:"University of Waterloo",sub:"BCS · to 2030",a:2025.70,b:X1-0.05,open:true},
+    {label:"Code Driven Labs",sub:"SWE Intern · current",a:2026.28,b:2026.62,approx:true}
+  ];
+  let svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
+  svg+='<defs><linearGradient id="fadeblue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2337E8"/><stop offset="1" stop-color="#2337E8" stop-opacity="0"/></linearGradient></defs>';
+  svg+='<line class="tl-axis" x1="'+L+'" y1="'+(H-24)+'" x2="'+(W-Rp)+'" y2="'+(H-24)+'"/>';
+  for(let yr=2022;yr<=2027;yr++)svg+='<line class="tl-axis" x1="'+x(yr)+'" y1="'+(H-28)+'" x2="'+x(yr)+'" y2="'+(H-20)+'"/><text class="tl-tick" x="'+x(yr)+'" y="'+(H-8)+'" text-anchor="middle">'+yr+'</text>';
+  const nowX=x(2026.51);
+  svg+='<line class="tl-now" x1="'+nowX+'" y1="'+(T-10)+'" x2="'+nowX+'" y2="'+(H-24)+'"/><text class="tl-tick" x="'+(nowX+5)+'" y="'+(T-2)+'" fill="#C23807">now</text>';
+  rows.forEach((r,i)=>{
+    const y=T+i*rowH;
+    const bw=Math.max(6,x(r.b)-x(r.a));
+    if(r.open)svg+='<rect class="tl-open" x="'+x(r.a)+'" y="'+(y+14)+'" width="'+bw+'" height="9" rx="2"/>';
+    else if(r.approx)svg+='<rect class="tl-bar approx" x="'+x(r.a)+'" y="'+(y+13)+'" width="'+bw+'" height="11" rx="3"/>';
+    else svg+='<rect class="tl-bar" x="'+x(r.a)+'" y="'+(y+14)+'" width="'+bw+'" height="9" rx="2"/>';
+    svg+='<text class="tl-lab" x="'+x(r.a)+'" y="'+(y+8)+'">'+esc(r.label)+'</text><text class="tl-sub" x="'+(x(r.a)+bw+8)+'" y="'+(y+22)+'">'+esc(r.sub)+'</text>';
+  });
+  svg+='</svg>';
+  holder.innerHTML=svg;
+}
+
+/* =====================================================================
+   11 · fig. 01 — the mechanism canvas
+===================================================================== */
+function initMech(){
+  const cv=$("#mech");
+  const ctx=cv&&cv.getContext?cv.getContext("2d"):null;
+  if(!ctx)return;
+  let visible=true,rafOn=false;
+  const t0=(window.performance&&performance.now)?performance.now():Date.now();
+  const nowMs=()=>((window.performance&&performance.now)?performance.now():Date.now());
+  function frame(){
+    const r=cv.parentElement.getBoundingClientRect();
+    if(r.width<10)return;
+    const d=Math.min(2,window.devicePixelRatio||1);
+    cv.width=Math.max(1,Math.round(r.width*d));cv.height=Math.max(1,Math.round(r.height*d));
+    ctx.setTransform(d,0,0,d,0,0);
+    const W=r.width,H=r.height,cx=W/2,cy=H/2+8,R=Math.min(W,H)*0.33;
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle="rgba(18,21,26,.14)";ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(cx-R-22,cy);ctx.lineTo(cx+R+22,cy);ctx.moveTo(cx,cy+R+22);ctx.lineTo(cx,cy-R-22);ctx.stroke();
+    ctx.strokeStyle="rgba(35,55,232,.16)";
+    ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
+    const A=0.55;
+    const t=(nowMs()-t0)/1000;
+    let dTheta;
+    if(state.topCos!=null){dTheta=Math.acos(clamp(state.topCos,-1,1))+(RM()?0:Math.sin(t*1.2)*0.015);}
+    else if(RM()){dTheta=0.72;}
+    else{dTheta=0.55+0.42*Math.sin(t*0.45)+0.16*Math.sin(t*1.7);}
+    const Bang=A+Math.abs(dTheta);
+    ctx.strokeStyle="#626A75";ctx.lineWidth=1.4;
+    ctx.beginPath();ctx.arc(cx,cy,R*0.36,-Bang,-A);ctx.stroke();
+    const vec=(ang,col,lab)=>{
+      const x=cx+Math.cos(-ang)*R,y=cy+Math.sin(-ang)*R;
+      ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2.4;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(x,y);ctx.stroke();
+      ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fill();
+      ctx.font="600 11px 'IBM Plex Mono',monospace";
+      const tw=ctx.measureText(lab).width;
+      ctx.fillText(lab,x+(Math.cos(-ang)>=0?9:-9-tw),y+4);
+    };
+    vec(A,"#FF4D17","job description");
+    vec(Bang,"#2337E8",state.topTitle?trunc(state.topTitle,14):"project");
+    const cosv=Math.cos(Bang-A);
+    ctx.fillStyle="#12151A";
+    ctx.font="600 24px 'IBM Plex Mono',monospace";
+    ctx.fillText("cos \u03B8 = "+cosv.toFixed(3),16,32);
+    ctx.fillStyle="#626A75";
+    ctx.font="500 11px 'IBM Plex Mono',monospace";
+    ctx.fillText(state.topCos!=null?"live \u00B7 MiniLM in this tab":"demo sweep \u00B7 paste a job description for live values",16,50);
+  }
+  function trunc(s,n){return s.length>n?s.slice(0,n-1)+"\u2026":s;}
+  function loop(){
+    if(!visible||document.hidden){rafOn=false;return;}
+    frame();
+    if(RM()&&state.topCos==null){rafOn=false;return;}
+    raf(loop);
+  }
+  function kick(){if(!rafOn){rafOn=true;raf(loop);}}
+  if("IntersectionObserver" in window){
+    new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible)kick();},{threshold:.05}).observe(cv);
+  }
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)kick();});
+  window.addEventListener("resize",debounce(kick,150));
+  kick();
+  initMech.kick=kick;
+}
+
+/* =====================================================================
+   12 · case-study dialog
+===================================================================== */
+let dlgReturn=null;
+function openCase(id,opener){
+  const s=SIGNALS.find(x=>x.id===id);if(!s)return;
+  dlgReturn=opener||null;
+  el.dlgKind.textContent="case file \u00B7 "+s.kind.toLowerCase();
+  el.dlgTitle.textContent=s.title;
+  el.dlgRole.textContent=s.role;
+  const r=state.ranked.find(x=>x.s.id===id);
+  const rankPos=r?state.ranked.indexOf(r)+1:0;
+  el.dlgFit.textContent=r?(r.cos!=null?"current fit vs your job description: cos "+r.cos.toFixed(3)+" \u00B7 rank "+rankPos+"/"+SIGNALS.length:"tag score "+r.score+" \u00B7 rank "+rankPos+"/"+SIGNALS.length):"";
+  const cs=s.cs;
+  el.dlgBody.innerHTML=
+    '<div class="dlg-sec"><h4>Problem</h4><p>'+esc(cs.problem)+'</p></div>'+
+    '<div class="dlg-sec"><h4>Approach</h4><p>'+esc(cs.approach)+'</p></div>'+
+    '<div class="dlg-sec"><h4>Architecture &amp; notes</h4><ul>'+cs.notes.map(n=>'<li>'+esc(n)+'</li>').join("")+'</ul></div>'+
+    '<div class="dlg-sec"><h4>Stack</h4><div class="stack-chips">'+cs.stack.map(t=>'<span>'+esc(t)+'</span>').join("")+'</div></div>'+
+    (cs.links.length?'<div class="dlg-sec dlg-links"><h4>Links</h4>'+cs.links.map(l=>'<a href="'+esc(l.href)+'" target="_blank" rel="noopener">'+esc(l.label)+' \u2197</a>').join(" \u00B7 ")+'</div>':"");
+  if(el.dlg.showModal)el.dlg.showModal();
+  else el.dlg.setAttribute("open","");
+  const xb=$("#dlgClose");if(xb&&xb.focus)xb.focus();
+}
+function closeCase(){
+  if(el.dlg.close)el.dlg.close();
+  else el.dlg.removeAttribute("open");
+  if(dlgReturn&&dlgReturn.focus)dlgReturn.focus();
+}
+$("#dlgClose").addEventListener("click",e=>{e.stopPropagation();closeCase();});
+el.dlg.addEventListener("cancel",()=>{if(dlgReturn&&dlgReturn.focus)setTimeout(()=>dlgReturn.focus(),0);});
+el.dlg.addEventListener("click",e=>{
+  if(!el.dlg.open)return;
+  const rct=el.dlg.getBoundingClientRect();
+  if(e.clientX<rct.left||e.clientX>rct.right||e.clientY<rct.top||e.clientY>rct.bottom)closeCase();
+});
+
+/* =====================================================================
+   13 · central update
+===================================================================== */
+function update(){
+  const tags=selectedTags();
+  const semantic=state.mode==="semantic"&&!!state.jdVec&&!!state.vecs;
+  const ranked=semantic?rankSemantic():rankChips(tags);
+  state.ranked=ranked;
+  renderHero(ranked,semantic,tags);
+  renderOutput(ranked,semantic,tags);
+  reorder(()=>updateCards(ranked,semantic,tags));
+  layoutMap(semantic,ranked);
+  renderResume(ranked,semantic,tags);
+  if(initMech.kick)initMech.kick();
+}
+
+/* =====================================================================
+   14 · wiring
+===================================================================== */
+function setChipsEnabled(on){
+  el.chips.forEach(c=>{c.disabled=!on;});
+  el.presets.forEach(p=>{p.disabled=!on;});
+  el.chipNote.textContent=on?"":"job description active \u2014 tag inputs paused. Clear the job description to use them.";
+}
+el.chips.forEach(chip=>chip.addEventListener("click",()=>{
+  chip.setAttribute("aria-pressed",chip.getAttribute("aria-pressed")==="true"?"false":"true");
+  el.presets.forEach(p=>p.classList.remove("active"));
+  update();
+}));
+el.presets.forEach(preset=>preset.addEventListener("click",()=>{
+  const tags=PRESETS[preset.dataset.preset]||[];
+  el.chips.forEach(c=>c.setAttribute("aria-pressed",tags.includes(c.dataset.tag)?"true":"false"));
+  el.presets.forEach(p=>p.classList.toggle("active",p===preset));
+  update();
+}));
+const onJD=debounce(async()=>{
+  const text=el.jd.value.trim();
+  state.jdText=text;
+  if(text.length<12){
+    if(state.mode!=="chips"){state.mode="chips";state.jdVec=null;setChipsEnabled(true);update();}
+    return;
+  }
+  const emb=await ensureModel();
+  if(!emb)return;                          /* quiet fallback — chips stay in charge */
+  const corpus=await ensureCorpus();
+  if(!corpus)return;
+  if(el.jd.value.trim()!==text)return;     /* stale keystroke */
+  const vs=await embedBatch([text]);
+  if(el.jd.value.trim()!==text)return;
+  state.jdVec=vs[0];
+  state.mode="semantic";
+  setChipsEnabled(false);
+  update();
+},400);
+el.jd.addEventListener("input",onJD);
+el.jd.addEventListener("focus",()=>{ensureModel();},{once:true});   /* warm the model while they type */
+el.jdClear.addEventListener("click",()=>{
+  el.jd.value="";state.jdText="";state.jdVec=null;state.mode="chips";
+  setChipsEnabled(true);update();el.jd.focus();
+});
+$$(".sample").forEach(b=>b.addEventListener("click",()=>{
+  el.jd.value=SAMPLE_JDS[b.dataset.sample]||"";
+  el.jd.dispatchEvent(new Event("input"));
+  el.jd.focus();
+}));
+$("#exportResume").addEventListener("click",exportResume);
+$("#heroExport").addEventListener("click",exportResume);
+$("#printResume").addEventListener("click",()=>window.print());
+$("#copyPitch").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(el.pitch.textContent);showToast("Pitch copied");}
+  catch(e){showToast("Copy unavailable");}
+});
+function showToast(msg){
+  el.toast.textContent=msg;
+  el.toast.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t=setTimeout(()=>el.toast.classList.remove("show"),1900);
+}
+
+/* scroll reveals */
+(function(){
+  const els=$$(".reveal");
+  if(!("IntersectionObserver" in window)||RM()){els.forEach(e=>e.classList.add("in"));return;}
+  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}}),{threshold:.15});
+  els.forEach(e=>io.observe(e));
+})();
+
+/* =====================================================================
+   15 · init + the DevTools easter egg (hi, recruiter)
+===================================================================== */
+buildCards();
+buildMap();
+buildTimeline();
+initMech();
+update();
+window.__portfolio={
+  model:MODEL_ID,
+  mode:()=>state.mode,
+  rank:()=>state.ranked.map(r=>({title:r.s.title,cos:r.cos,tagScore:r.score,pct:r.pct})),
+  vectors:()=>state.vecs?Object.keys(state.vecs.proj).length+" project embeddings \u00B7 384-d each":"paste a job description first \u2014 embeddings are computed lazily",
+  cosine:cosine,pca2:pca2
+};
+try{
+  console.info(
+    "%c Navraj Singh Gill \u2014 the ranking on this page is real \n%c model: "+MODEL_ID+" \u00B7 384-d \u00B7 runs in this tab via transformers.js\n projection: PCA (power iteration), written from scratch\n poke it: __portfolio.rank()  \u00B7  __portfolio.cosine(a,b)\n network tab: watch huggingface.co when you paste a job description",
+    "font:600 13px 'IBM Plex Mono',monospace;background:#2337E8;color:#fff;padding:4px 8px;border-radius:3px",
+    "font:12px 'IBM Plex Mono',monospace;color:#454C57"
+  );
+}catch(e){}
+</script>
+</body>
+</html>
