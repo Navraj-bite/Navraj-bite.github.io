@@ -11,9 +11,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navraj Singh Gill — the portfolio is the model</title>
-<meta name="description" content="A CS @ Waterloo portfolio that ranks itself against your job description using a real sentence-transformer running in your browser.">
+<title>Navraj Singh Gill — CS @ Waterloo · software engineering &amp; ML</title>
+<meta name="description" content="CS at Waterloo. Software engineering intern building FastAPI + PostgreSQL backends and React dashboards; ML projects where the evaluation matters as much as the model. CV, work, and contact.">
 <meta name="theme-color" content="#FAFAF7">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://navraj-bite.github.io/">
+<meta property="og:title" content="Navraj Singh Gill — CS @ Waterloo · software engineering &amp; ML">
+<meta property="og:description" content="Software engineering intern building FastAPI + PostgreSQL backends and React dashboards; ML projects where the evaluation matters as much as the model.">
+<meta property="og:image" content="https://navraj-bite.github.io/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Navraj Singh Gill — CS @ Waterloo · software engineering &amp; ML">
+<meta name="twitter:description" content="Software engineering intern building FastAPI + PostgreSQL backends and React dashboards; ML projects where the evaluation matters as much as the model.">
+<meta name="twitter:image" content="https://navraj-bite.github.io/assets/og.png">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="%23FAFAF7"/><path d="M16 5v22M5 16h22" stroke="%232337E8" stroke-width="2"/><circle cx="16" cy="16" r="5.5" fill="none" stroke="%23FF4D17" stroke-width="2"/></svg>'>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,9 +107,14 @@ button{cursor:pointer;background:none;border:none;padding:0}
 .navlinks{display:flex;align-items:center;gap:2px;font-family:var(--mono);font-size:13px}
 .navlinks a{color:var(--ink-2);padding:7px 10px;border-radius:var(--r)}
 .navlinks a:hover{color:var(--blue);background:var(--blue-soft)}
+.nav-cv{
+  flex:none;border:1px solid var(--ink);border-radius:var(--r);
+  padding:7px 12px;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);
+}
+.nav-cv:hover{background:var(--ink);color:var(--paper)}
 
 /* ============ hero ============ */
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,440px);gap:44px;align-items:center;padding:64px 0 56px}
+.hero{padding:72px 0 60px}
 .status{
   display:inline-flex;align-items:center;gap:9px;
   border:1px solid var(--hair);background:var(--card);border-radius:999px;
@@ -109,7 +123,7 @@ button{cursor:pointer;background:none;border:none;padding:0}
 .status i{width:7px;height:7px;border-radius:50%;background:var(--signal);flex:none;
   animation:pulse 2.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,77,23,.5)}55%{box-shadow:0 0 0 6px rgba(255,77,23,0)}}
-h1{margin:26px 0 20px;font-size:clamp(42px,6.6vw,86px);max-width:12ch}
+h1{margin:26px 0 20px;font-size:clamp(40px,6.2vw,78px);max-width:16ch}
 .h1-accent{display:block;color:var(--blue)}
 .q{font-style:normal;color:var(--signal-ink);
   text-decoration:underline dotted var(--signal);text-decoration-thickness:2px;text-underline-offset:6px}
@@ -126,8 +140,30 @@ h1{margin:26px 0 20px;font-size:clamp(42px,6.6vw,86px);max-width:12ch}
 .btn.primary{background:var(--ink);color:var(--paper)}
 .btn.primary:hover{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.quiet{border-color:var(--hair)}
-.hero-fig{padding:18px 18px 14px}
-.mech-wrap{position:relative;aspect-ratio:1/1;background:
+.intro{max-width:64ch}
+
+/* ============ tailored view (opt-in) ============ */
+.tailor{padding:26px 0 0}
+.tailor-summary{
+  list-style:none;cursor:pointer;display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;
+  border:1px solid var(--hair);background:var(--card);border-radius:var(--r);
+  padding:16px 18px;transition:border-color .18s,box-shadow .18s;
+}
+.tailor-summary::-webkit-details-marker{display:none}
+.tailor-summary:hover{border-color:var(--ink);box-shadow:0 6px 20px rgba(18,21,26,.08)}
+.tailor-summary:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.tailor-mark{color:var(--signal);font-size:15px;transition:transform .2s ease;display:inline-block}
+.tailor[open] .tailor-mark{transform:rotate(90deg)}
+.tailor-copy{font-size:14px;color:var(--ink-2);line-height:1.5}
+.tailor-copy b{display:block;color:var(--ink);font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.015em;margin-bottom:3px}
+.tailor-cue{font-size:12px;color:var(--blue-deep);white-space:nowrap}
+.tailor[open] .tailor-cue{color:var(--ink-3)}
+.tailor[open] .tailor-summary{margin-bottom:4px}
+.tailor > *:not(.tailor-summary){animation:tailorIn .32s cubic-bezier(.22,1,.36,1)}
+@keyframes tailorIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.mech-fig{padding:16px 16px 12px;margin:0 0 16px;max-width:520px}
+.mech-wrap{position:relative;aspect-ratio:16/10;background:
   linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),#fff;
   background-size:28px 28px;border:1px solid var(--hair-2);border-radius:var(--r);overflow:hidden}
 .mech-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
@@ -222,6 +258,8 @@ label.field-label{display:block;font-family:var(--mono);font-size:11px;color:var
 .match-row .bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .6s cubic-bezier(.22,1,.36,1)}
 .match-row.top .bar i{background:linear-gradient(90deg,var(--blue),var(--signal))}
 .match-row .cs{color:var(--blue-deep);text-align:right}
+.calib{font-family:var(--mono);font-size:10.5px;line-height:1.55;color:var(--ink-3);margin:12px 0 0;padding-top:10px;border-top:1px solid var(--hair-2)}
+.calib em{color:var(--ink-2);font-style:normal;font-weight:600}
 .weight-list{display:grid;gap:9px}
 .weight-row{display:grid;grid-template-columns:78px 1fr 32px;gap:9px;align-items:center;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
 .weight-row .track{height:5px;border-radius:3px;background:var(--hair-2);overflow:hidden}
@@ -274,6 +312,10 @@ label.field-label{display:block;font-family:var(--mono);font-size:11px;color:var
 .card-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--hair-2);font-family:var(--mono);font-size:11px;color:var(--ink-3)}
 .card-foot .cue{color:var(--blue-deep)}
 .signal-card:hover .cue{color:var(--signal-ink)}
+/* default mode: no scores until a query exists */
+.rank-grid.plain .gauge-wrap,.rank-grid.plain .rawfit{display:none}
+.rank-grid.plain .signal-card::before{display:none}
+.rank-grid.plain .card-foot{justify-content:flex-end}
 
 /* trajectory */
 .tl-frame{padding:20px 16px 8px;overflow-x:auto}
@@ -296,7 +338,7 @@ label.field-label{display:block;font-family:var(--mono);font-size:11px;color:var
 .skill-block p{margin:0;color:var(--ink-2);font-size:13.5px}
 
 /* resume */
-.resume-zone{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);gap:18px;align-items:start}
+.resume-zone{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);gap:18px;align-items:start}
 .paper{
   background:#fff;color:#17211f;border:1px solid var(--hair);border-radius:var(--r);
   padding:32px;box-shadow:0 18px 50px rgba(18,21,26,.09);min-height:640px;
@@ -312,6 +354,7 @@ label.field-label{display:block;font-family:var(--mono);font-size:11px;color:var
 .paper-item span{display:block;color:#5a6763;font-size:12px;font-style:italic}
 .paper ul{margin:5px 0 0;padding-left:18px;font-size:12.5px;line-height:1.4}
 .paper li{margin-bottom:4px}
+.paper-note{margin:18px 0 0;padding-top:10px;border-top:1px solid #c9cfc9;font-family:var(--mono);font-size:10.5px;color:#5a6763;text-align:center}
 .resume-actions{border:1px solid var(--hair);border-radius:var(--r);background:var(--card);padding:18px;position:sticky;top:76px}
 .resume-actions h3{font-size:17px;margin-bottom:8px}
 .resume-actions p{margin:0 0 14px;color:var(--ink-3);font-size:13.5px}
@@ -369,14 +412,16 @@ dialog.case:not([open]){display:none}
 /* ============ responsive ============ */
 @media(max-width:1080px){
   .console-grid{grid-template-columns:1fr 1fr}
-  .map-panel{grid-column:1/-1;order:-1}
+  .map-panel{grid-column:1/-1}
   .signal-card{grid-column:span 6}
 }
 @media(max-width:820px){
-  .hero{grid-template-columns:1fr;gap:30px;padding-top:40px}
+  .hero{padding-top:44px}
   .console-grid{grid-template-columns:1fr}
   .resume-zone{grid-template-columns:1fr}
   .resume-actions{position:static}
+  .tailor-summary{grid-template-columns:auto minmax(0,1fr)}
+  .tailor-cue{display:none}
   .skills-band{grid-template-columns:1fr 1fr}
   .section-head{display:block}
   .section-head p{margin-top:10px}
@@ -384,7 +429,11 @@ dialog.case:not([open]){display:none}
 @media(max-width:640px){
   .wrap{width:calc(100% - 28px)}
   .nav{height:auto;min-height:56px;flex-wrap:wrap;padding:10px 0}
-  .navlinks{width:100%;overflow-x:auto;padding-bottom:4px}
+  .brand{order:1}
+  .nav-cv{order:2}
+  .navlinks{order:3;width:100%;overflow-x:auto;padding-bottom:4px}
+  .hero{padding:36px 0 20px}
+  h1{font-size:clamp(34px,9vw,44px)}
   .signal-card{grid-column:span 12}
   .skills-band,.metric-row{grid-template-columns:1fr}
   .paper{padding:20px}
@@ -402,15 +451,15 @@ dialog.case:not([open]){display:none}
 /* ============ print: resume only ============ */
 @media print{
   body{background:#fff}
-  .topbar,.hero,.band,.section:not(#resume),.footer,.toast,.resume-actions,dialog,.section-head{display:none!important}
-  #resume{padding:0}
+  .topbar,.hero,.band,.section:not(#cv),.footer,.toast,.resume-actions,dialog,.section-head{display:none!important}
+  #cv{padding:0}
   .resume-zone{display:block}
   .paper{box-shadow:none;border:none;border-radius:0;padding:0;min-height:0}
 }
 </style>
 </head>
 <body>
-<a class="skip" href="#model">Skip to the console</a>
+<a class="skip" href="#work">Skip to the work</a>
 
 <div class="topbar">
   <nav class="wrap nav" aria-label="Primary">
@@ -419,14 +468,14 @@ dialog.case:not([open]){display:none}
       <span>Navraj Singh Gill</span>
     </a>
     <div class="navlinks">
-      <a href="#model">console</a>
-      <a href="#evidence">evidence</a>
-      <a href="#trajectory">trajectory</a>
-      <a href="#resume">resume</a>
+      <a href="#work">work</a>
+      <a href="#experience">experience</a>
+      <a href="#cv">cv</a>
       <a href="mailto:ns8gill@uwaterloo.ca">email</a>
       <a href="https://github.com/Navraj-bite" target="_blank" rel="noopener">github ↗</a>
       <a href="https://www.linkedin.com/in/navrajsgill" target="_blank" rel="noopener">linkedin ↗</a>
     </div>
+    <a class="nav-cv" href="assets/navraj-gill-cv.pdf" download>CV ↓</a>
   </nav>
 </div>
 
@@ -435,33 +484,73 @@ dialog.case:not([open]){display:none}
   <section class="wrap hero" aria-labelledby="hero-title">
     <div class="hero-copy">
       <p class="status"><i aria-hidden="true"></i>swe intern @ code driven labs · seeking ML internships</p>
-      <h1 id="hero-title">This portfolio ranks <span class="h1-accent">itself against <em class="q">your job description</em>.</span></h1>
-      <p class="intro">I'm Navraj. I study CS at <strong>Waterloo</strong>, and the way I learn is mostly the same everywhere: build something until it breaks, then sit with it until I actually understand why, rather than moving on once it works. What draws me to this field is that it's honest. Code runs or it doesn't, a model generalizes or it overfits, and there's no talking your way around a stack trace, which I find calming rather than stressful. I finish what I start, I don't claim to know something I haven't tested myself, and I'd rather underclaim and show you than overclaim and explain later.</p>
+      <h1 id="hero-title">Navraj Singh Gill<span class="h1-accent">builds things that have to <em class="q">actually work</em>.</span></h1>
+      <p class="intro">CS at <strong>Waterloo</strong>. Currently a software engineering intern shipping a FastAPI + PostgreSQL backend and its React admin dashboard. Outside of that I build ML systems and keep the baseline in the repo — because a model that can't beat logistic regression hasn't earned its complexity.</p>
       <div class="hero-actions">
-        <a class="btn primary" href="#model">Paste a job description ↓</a>
-        <button class="btn" type="button" id="heroExport">Export tailored resume</button>
+        <a class="btn primary" href="assets/navraj-gill-cv.pdf" download>Download CV ↓</a>
+        <a class="btn" href="mailto:ns8gill@uwaterloo.ca">ns8gill@uwaterloo.ca</a>
         <a class="btn quiet" href="https://github.com/Navraj-bite" target="_blank" rel="noopener">GitHub ↗</a>
       </div>
     </div>
-    <figure class="hero-fig frame" aria-labelledby="fig1cap" style="margin:0">
-      <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
-      <div class="mech-wrap"><canvas id="mech" aria-hidden="true"></canvas></div>
-      <div class="metric-row" role="group" aria-label="Live model readout">
-        <div class="metric"><b id="heroFit">—</b><span id="heroFitLab">role fit</span></div>
-        <div class="metric"><b id="heroSignals">8</b><span>signals ranked</span></div>
-        <div class="metric"><b id="heroFocus">ML</b><span>current focus</span></div>
-      </div>
-      <figcaption class="figcap" id="fig1cap"><span class="fig-kicker">fig. 01 — the scoring rule.</span> <span id="mechCap">Every card's fit = cos θ between its embedding and the job description's, measured in 384 dimensions. This is the whole trick; everything else is presentation.</span></figcaption>
-    </figure>
   </section>
 
-  <!-- ============ console ============ -->
-  <section class="band" id="model" aria-label="Matching model console">
+  <!-- ============ work ============ -->
+  <section class="wrap section" id="work" aria-labelledby="work-title">
+    <div class="section-head">
+      <div>
+        <span class="fig-kicker">selected work</span>
+        <h2 id="work-title">What I've built.</h2>
+      </div>
+      <p>Nine projects and roles. Click any card for the problem, the approach, and what I'd do differently.</p>
+    </div>
+    <div class="rank-grid" id="signalGrid">
+      <noscript>
+        <div class="nojs" style="grid-column:1/-1">
+          JavaScript is off, so the cards below aren't rendered. The plain list:
+          <ul>
+            <li><b>2026 World Cup Predictor</b> — XGBoost vs logistic baseline, rolling Elo over 49,000+ matches</li>
+            <li><b>This portfolio</b> — in-browser sentence-transformer, PCA written from scratch, one static file</li>
+            <li><b>Code Driven Labs</b> — Software Engineering Intern, May 2026–present · FastAPI, PostgreSQL, React</li>
+            <li><b>InSync</b> — Chrome extension: LLM tab-grouping · Python, FastAPI, Groq</li>
+            <li><b>Wade Maritime Pvt. Ltd.</b> — Backend Intern, 2024 · FastAPI, PostgreSQL</li>
+            <li><b>Prompt Engineering in AI Models</b> — independent article, 200-prompt study</li>
+            <li><b>Automatic Irrigation System</b> — Arduino + IoT sensors · IIT Bombay showcase</li>
+            <li><b>MolCraft</b> — Flutter app on Google Play · 3-D chemistry models</li>
+            <li><b>Solutions 1313</b> — Frontend Intern, 2022</li>
+          </ul>
+          <p style="margin:10px 0 0">The full CV is a plain PDF: <a href="assets/navraj-gill-cv.pdf" download>download it here</a>.</p>
+        </div>
+      </noscript>
+    </div>
+    <div class="rule-ticks" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ tailored view (opt-in) ============ -->
+  <section class="band" id="model" aria-label="Tailored view">
     <div class="wrap">
+      <details class="tailor" id="tailorPanel">
+        <summary class="tailor-summary">
+          <span class="tailor-mark" aria-hidden="true">▸</span>
+          <span class="tailor-copy">
+            <b>Hiring for something specific? Paste the job description.</b>
+            This page re-ranks itself against it using a real sentence-transformer that runs in your tab — no upload, no server, nothing sent anywhere.
+          </span>
+          <span class="tailor-cue mono">open ↓</span>
+        </summary>
       <div class="band-head">
-        <span class="fig-kicker">fig. 02 — the console. <b>orange = your query</b> · blue = my work</span>
+        <span class="fig-kicker">fig. 01 — the console. <b>orange = your query</b> · blue = my work</span>
         <span class="mono">model: Xenova/all-MiniLM-L6-v2 · 384-d · client-side</span>
       </div>
+      <figure class="mech-fig frame" aria-labelledby="fig1cap">
+        <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
+        <div class="mech-wrap"><canvas id="mech" aria-hidden="true"></canvas></div>
+        <div class="metric-row" role="group" aria-label="Live model readout">
+          <div class="metric"><b id="heroFit">—</b><span id="heroFitLab">top match</span></div>
+          <div class="metric"><b id="heroSignals">9</b><span>items ranked</span></div>
+          <div class="metric"><b id="heroFocus">ML</b><span>current focus</span></div>
+        </div>
+        <figcaption class="figcap" id="fig1cap"><span class="fig-kicker">the scoring rule.</span> <span id="mechCap">Every card's fit = cos θ between its embedding and the job description's, measured in 384 dimensions. This is the whole trick; everything else is presentation.</span></figcaption>
+      </figure>
       <div class="console-grid">
         <!-- query panel -->
         <div class="cpanel">
@@ -542,50 +631,22 @@ dialog.case:not([open]){display:none}
           </div>
         </div>
       </div>
+      </details>
     </div>
-  </section>
-
-  <!-- ============ evidence ============ -->
-  <section class="wrap section" id="evidence" aria-labelledby="evidence-title">
-    <div class="section-head">
-      <div>
-        <span class="fig-kicker">ranked evidence</span>
-        <h2 id="evidence-title">Strongest signals surface first.</h2>
-      </div>
-      <p>Order, gauges, and bullet emphasis update live from the console — tag model by default, MiniLM embeddings when a job description is pasted. Raw scores shown; click any card for the case study.</p>
-    </div>
-    <div class="rank-grid" id="signalGrid">
-      <noscript>
-        <div class="nojs" style="grid-column:1/-1">
-          JavaScript is off, so the live ranking is paused. The plain list:
-          <ul>
-            <li><b>Code Driven Labs</b> — Software Engineering Intern (current)</li>
-            <li><b>InSync</b> — Chrome extension: LLM tab-grouping · Python, FastAPI, Groq</li>
-            <li><b>AWS Machine Learning Workshop</b> — hands-on ML training, 2023</li>
-            <li><b>Prompt Engineering in AI Models</b> — independent article, 200-prompt study</li>
-            <li><b>Wade Maritime Pvt. Ltd.</b> — Backend Intern, 2024 · FastAPI, PostgreSQL</li>
-            <li><b>Automatic Irrigation System</b> — Arduino + IoT sensors · IIT Bombay showcase</li>
-            <li><b>MolCraft</b> — Flutter app on Google Play · 3-D chemistry models</li>
-            <li><b>Solutions 1313</b> — Frontend Intern, 2022</li>
-          </ul>
-        </div>
-      </noscript>
-    </div>
-    <div class="rule-ticks" aria-hidden="true"></div>
   </section>
 
   <!-- ============ trajectory ============ -->
-  <section class="wrap section" id="trajectory" aria-labelledby="trajectory-title">
+  <section class="wrap section" id="experience" aria-labelledby="trajectory-title">
     <div class="section-head">
       <div>
-        <span class="fig-kicker">fig. 03 — trajectory</span>
+        <span class="fig-kicker">fig. 02 — trajectory</span>
         <h2 id="trajectory-title">Shipping since 2022.</h2>
       </div>
-      <p>Dated roles only — solid bars are exact ranges; the dashed marker is the current internship (start shown approximately).</p>
+      <p>Dated roles only — solid bars are exact ranges. Three internships across frontend, backend, and full-stack, plus the degree.</p>
     </div>
     <div class="tl-frame frame reveal" id="tlFrame">
       <i class="cx tl"></i><i class="cx tr"></i><i class="cx bl"></i><i class="cx br"></i>
-      <div id="timeline" role="img" aria-label="Timeline from 2022 to 2027: Solutions 1313 frontend internship mid-2022, AWS Machine Learning Workshop mid-2023, Wade Maritime backend internship mid-2024, University of Waterloo Bachelor of Computer Science from late 2025 onward, and the current Code Driven Labs software engineering internship in 2026."></div>
+      <div id="timeline" role="img" aria-label="Timeline from 2022 to 2027: Solutions 1313 frontend internship mid-2022, Wade Maritime backend internship April to July 2024, University of Waterloo Bachelor of Computer Science from late 2025 onward, and the current Code Driven Labs software engineering internship from May 2026 to the present."></div>
     </div>
   </section>
 
@@ -596,42 +657,49 @@ dialog.case:not([open]){display:none}
         <span class="fig-kicker">skill map</span>
         <h2 id="skills-title">Foundations that transfer.</h2>
       </div>
-      <p>An honest early-stage profile: strong fundamentals, hands-on ML exposure, and a clear direction toward applied ML engineering.</p>
+      <p>Backend depth from three internships, ML from projects where the evaluation matters as much as the model.</p>
     </div>
     <div class="skills-band reveal">
-      <div class="skill-block"><h3>ML foundations</h3><p>Data preprocessing, feature selection, decision trees, model evaluation, hyperparameter tuning, cross-validation.</p></div>
-      <div class="skill-block"><h3>LLM applications</h3><p>FastAPI-backed LLM workflows, prompt testing, uncertainty-aware categorization, caching for API efficiency.</p></div>
-      <div class="skill-block"><h3>Software systems</h3><p>Python, FastAPI, PostgreSQL, Pydantic, Chrome APIs, HTML, CSS, JavaScript, debugging in production-style codebases.</p></div>
-      <div class="skill-block"><h3>Product range</h3><p>Mobile app publishing, Figma design, Arduino sensor systems, technical writing, code reviews, and standups.</p></div>
+      <div class="skill-block"><h3>ML &amp; modelling</h3><p>XGBoost, scikit-learn, pandas, feature engineering (rolling Elo), time-based splits, log-loss and baseline comparison, Monte Carlo simulation, sentence embeddings.</p></div>
+      <div class="skill-block"><h3>Backend</h3><p>Python, FastAPI, PostgreSQL, SQLAlchemy 2.0, Alembic migrations, Pydantic, JWT and email-OTP auth, AWS S3, WebSockets, REST API design.</p></div>
+      <div class="skill-block"><h3>Frontend</h3><p>React, TypeScript, Vite, component architecture, server-side search/sort/filter/pagination, HTML, CSS, JavaScript, Chrome extension APIs, Flutter.</p></div>
+      <div class="skill-block"><h3>Practice</h3><p>Code review, Alembic-versioned schema change, debugging production codebases, Figma, technical writing, Arduino sensor systems.</p></div>
     </div>
   </section>
 
   <!-- ============ resume ============ -->
-  <section class="wrap section" id="resume" aria-labelledby="resume-title">
+  <section class="wrap section" id="cv" aria-labelledby="resume-title">
     <div class="section-head">
       <div>
-        <span class="fig-kicker">output — tailored artifact</span>
-        <h2 id="resume-title">The resume rebuilds itself.</h2>
+        <span class="fig-kicker">cv</span>
+        <h2 id="resume-title">The CV is a PDF.</h2>
       </div>
-      <p>Same facts, re-prioritized. With a job description active, projects <em>and individual bullets</em> reorder by semantic similarity. Export is a clean, printable HTML file.</p>
+      <p>One file, always the same, made to be forwarded. The preview beside it is a re-ordered subset of that PDF — never a different claim.</p>
     </div>
     <div class="resume-zone">
-      <article class="paper" id="resumePaper" aria-label="Tailored resume preview"></article>
       <aside class="resume-actions">
-        <h3>Resume output</h3>
-        <p>The current ranking chooses the focus line, reorders the evidence, and picks which bullets lead.</p>
+        <h3>Download</h3>
+        <p>Plain PDF. Nothing on this page changes what's in it.</p>
         <div class="action-stack">
-          <button class="btn primary" type="button" id="exportResume">Export tailored resume</button>
-          <button class="btn" type="button" id="printResume">Print resume</button>
+          <a class="btn primary" href="assets/navraj-gill-cv.pdf" download>Download CV (PDF) ↓</a>
+          <a class="btn" href="assets/navraj-gill-cv.pdf" target="_blank" rel="noopener">Open in browser ↗</a>
         </div>
-        <p class="resume-mode">source of ranking: <b id="resumeMode">tag model</b></p>
+        <hr class="divider">
+        <h3 style="font-size:15px">Or: a tailored version</h3>
+        <p>With a job description active in the tailored view, this preview reorders projects <em>and individual bullets</em> by semantic similarity.</p>
+        <div class="action-stack">
+          <button class="btn quiet" type="button" id="exportResume">Export tailored version</button>
+          <button class="btn quiet" type="button" id="printResume">Print current view</button>
+        </div>
+        <p class="resume-mode">preview ordering: <b id="resumeMode">default</b></p>
       </aside>
+      <article class="paper" id="resumePaper" aria-label="Resume preview"></article>
     </div>
   </section>
 </main>
 
 <footer class="wrap footer">
-  <div>Navraj Singh Gill · University of Waterloo CS · <a href="mailto:ns8gill@uwaterloo.ca">ns8gill@uwaterloo.ca</a> · <a href="https://github.com/Navraj-bite" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/navrajsgill" target="_blank" rel="noopener">LinkedIn</a></div>
+  <div>Navraj Singh Gill · University of Waterloo CS · <a href="mailto:ns8gill@uwaterloo.ca">ns8gill@uwaterloo.ca</a> · <a href="assets/navraj-gill-cv.pdf" download>CV (PDF)</a> · <a href="https://github.com/Navraj-bite" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/navrajsgill" target="_blank" rel="noopener">LinkedIn</a></div>
   <p class="colophon">Colophon: one HTML file, no frameworks, no build. Semantic ranking is Xenova/all-MiniLM-L6-v2 (384-d, quantized) running in your browser via transformers.js; the 2-D skill space is PCA by power iteration, written from scratch; re-ranking uses the View Transitions API with a manual FLIP fallback. If the model can't load, a transparent tag model takes over and says so. View source — it's all here.</p>
 </footer>
 
@@ -676,20 +744,72 @@ const LABELS={ml:"machine learning",python:"Python",llm:"LLM applications",data:
 const TAGKEYS=Object.keys(LABELS);
 const PRESETS={ml:["ml","python","llm","data"],llm:["llm","python","backend","writing"],data:["backend","sql","python","data","team"],general:["ml","python","llm","data","backend","frontend","team","writing"]};
 const MODEL_ID="Xenova/all-MiniLM-L6-v2";
+/* Below this cosine I call it no match rather than reordering cards and hoping
+   nobody checks. MiniLM similarities compress into ~0.2–0.6, so this is low. */
+const WEAK_FIT=0.25;
 
 const SIGNALS=[
   {
-    id:"cdl",title:"Code Driven Labs",kind:"Experience",role:"Software Engineering Intern | current",
-    tags:["backend","team","python"],weights:{backend:2,team:2,python:1},
+    id:"worldcup",title:"2026 World Cup Predictor",kind:"Project",role:"Python | XGBoost | scikit-learn | pandas | Monte Carlo",
+    tags:["ml","python","data"],weights:{ml:3,python:3,data:3},
     bullets:[
-      ["Shipping features and fixes as a software engineering intern on a production codebase, working through implementation, review, and iteration with the team.",["backend","team"]],
-      ["Day-to-day practice with real engineering process: code review, tickets, and collaborating inside standards I didn't write.",["team"]]
+      ["Engineered rolling Elo ratings over 49,000+ international matches dating to 1872 — updated on result and goal difference, weighted higher for World Cup fixtures — to derive team strength, which is not present in the source data.",["ml","data","python"]],
+      ["Trained XGBoost against a logistic regression baseline on a time-based split (train pre-2024, test Jan 2024–June 2026, n=2,543): 59.97% vs 59.93% accuracy and 0.8689 vs 0.8706 log-loss, keeping the baseline in the repo to verify the boosted model earned its complexity.",["ml","python","data"]],
+      ["Logged timestamped pre-kickoff predictions for 7 live knockout matches and Monte Carlo-simulated the remaining bracket after each round; scored 7/7 under symmetrized win probability and 6/7 under raw per-row scoring, with the discrepancy documented rather than resolved in the model's favour.",["ml","data"]]
     ],
     cs:{
-      problem:"Real product, real users — the internship is ongoing, so specifics stay off the public site.",
-      approach:"Contributing as part of the engineering team: implementation, code review, and iterating with feedback in a production environment.",
-      notes:["Happy to walk through the actual work in an interview — the rest of this site is the pre-reading."],
-      stack:["Software engineering","Code review","Team process"],links:[]
+      problem:"Match outcomes are mostly a function of team strength, and team strength isn't a column in any dataset — it has to be constructed. Then the harder question: does a boosted model actually beat the obvious baseline, or does it just look like it does?",
+      approach:"Rolling Elo built over 49,000+ international matches back to 1872 supplies the missing strength feature. XGBoost is then trained against a logistic regression baseline on a time-based split — train pre-2024, test Jan 2024–June 2026 (n=2,543) — so no future information leaks backward into training.",
+      notes:[
+        "The margin is thin and stated as such: 59.97% vs 59.93% accuracy, 0.8689 vs 0.8706 log-loss. The baseline stays in the repo so anyone can check whether the extra complexity paid for itself.",
+        "Predictions for 7 live knockout matches were logged with timestamps before kickoff — no retroactive scoring.",
+        "Two scoring methods disagreed: 7/7 symmetrized, 6/7 raw per-row. I documented the discrepancy instead of picking the flattering number and moving on.",
+        "Monte Carlo re-simulated the remaining bracket after each round rather than predicting the whole tree once."
+      ],
+      stack:["Python","XGBoost","scikit-learn","pandas","Elo rating systems","Monte Carlo simulation"],
+      links:[{label:"github.com/Navraj-bite",href:"https://github.com/Navraj-bite"}]
+    }
+  },
+  {
+    id:"portfolio",title:"This portfolio",kind:"Project",role:"transformers.js | PCA from scratch | one static file",
+    tags:["ml","frontend","data"],weights:{ml:3,frontend:3,data:2},
+    bullets:[
+      ["Runs a real sentence-transformer (all-MiniLM-L6-v2, 384-d, quantized) entirely in the browser via transformers.js, embedding a pasted job description and re-ranking every project by cosine similarity — nothing is uploaded and no server is involved.",["ml","frontend"]],
+      ["Implements the 2-D skill-space projection as PCA by power iteration with deflation, written from scratch rather than pulled from a library.",["ml","data"]],
+      ["Ships as a single static HTML file — no framework, no bundler, no build step — with a transparent tag-based fallback that announces itself when the model can't load.",["frontend"]]
+    ],
+    cs:{
+      problem:"A portfolio claiming ML competence should demonstrate it rather than assert it. The demonstration also has to survive a recruiter's laptop: no server, no keys, no build pipeline.",
+      approach:"transformers.js loads a quantized MiniLM into the tab, embeds the pasted job description and the project corpus, and ranks by cosine similarity. The skill-space map projects those embeddings to 2-D using PCA implemented by power iteration with deflation.",
+      notes:[
+        "Everything runs client-side — the job description never leaves the browser.",
+        "Re-ranking animates through the View Transitions API with a manual FLIP fallback.",
+        "If the CDN or model fetch fails, a tag model takes over and says so on screen instead of silently degrading.",
+        "The whole thing is one file. View source."
+      ],
+      stack:["transformers.js","all-MiniLM-L6-v2","PCA (power iteration)","View Transitions API","Vanilla JS","SVG / Canvas"],
+      links:[{label:"github.com/Navraj-bite/Navraj-bite.github.io",href:"https://github.com/Navraj-bite/Navraj-bite.github.io"}]
+    }
+  },
+  {
+    id:"cdl",title:"Code Driven Labs",kind:"Experience",role:"Software Engineering Intern | May 2026–present",
+    tags:["backend","python","data","frontend","sql","team"],weights:{backend:3,python:3,data:2,frontend:2,sql:2,team:2},
+    bullets:[
+      ["Built 40 REST endpoints across a FastAPI + PostgreSQL social-travel backend and full-stack admin dashboard, spanning 8 data domains backed by 8 SQLAlchemy 2.0 models and 8 Alembic migrations — roughly 3,600 lines of Python.",["backend","python","sql","data"]],
+      ["Shipped passwordless email-OTP + JWT authentication, AWS S3 media uploads, and real-time WebSocket notifications powering a live activity feed.",["backend","python"]],
+      ["Developed a React/TypeScript (Vite) admin frontend with 16 reusable components (about 1,700 lines), adding server-side search, sorting, filtering, and pagination over a seeded dataset of 500+ users.",["frontend","data"]]
+    ],
+    cs:{
+      problem:"A social-travel product needed a backend broad enough to cover eight data domains and an admin surface that could actually operate it — search, filter, and paginate real volumes rather than a demo table.",
+      approach:"FastAPI over PostgreSQL with SQLAlchemy 2.0 models and Alembic migrations per domain; 40 REST endpoints in roughly 3,600 lines of Python. The admin frontend is React/TypeScript on Vite, 16 reusable components, with search, sort, filter and pagination pushed server-side.",
+      notes:[
+        "Authentication is passwordless email-OTP issuing JWTs — no password storage surface at all.",
+        "Media goes to AWS S3; the live activity feed runs over WebSockets rather than polling.",
+        "Server-side pagination was the deliberate call — a 500+ user seed already makes client-side filtering the wrong answer.",
+        "Ongoing role: standups, code review, and shipping inside standards I didn't write."
+      ],
+      stack:["Python","FastAPI","PostgreSQL","SQLAlchemy 2.0","Alembic","JWT / email-OTP","AWS S3","WebSockets","React","TypeScript","Vite"],
+      links:[]
     }
   },
   {
@@ -697,7 +817,7 @@ const SIGNALS=[
     tags:["llm","ml","python","backend","data"],weights:{llm:3,ml:2,python:2,backend:2,data:1},
     bullets:[
       ["Built a Chrome extension with a FastAPI backend that uses an LLM to categorize open browser tabs into color-coded native Chrome groups.",["llm","backend","python"]],
-      ["Added caching to reduce repeated API calls and uncertainty-aware logic to flag tabs that do not fit clearly into any category.",["llm","ml","data"]],
+      ["Added a caching layer keyed on tab metadata to cut repeated API calls, plus uncertainty-aware logic that flags low-confidence tabs instead of misfiling them.",["llm","ml","data"]],
       ["Pulled live tab metadata and used local storage so groupings stay up to date across browser sessions.",["backend","data"]]
     ],
     cs:{
@@ -709,26 +829,26 @@ const SIGNALS=[
     }
   },
   {
-    id:"aws",title:"AWS Machine Learning Workshop",kind:"Training",role:"Hands-on ML program | June–Aug. 2023",
-    tags:["ml","python","data","team"],weights:{ml:3,python:2,data:2,team:1},
+    id:"wade",title:"Wade Maritime Pvt. Ltd.",kind:"Experience",role:"Backend Intern | Apr.–Jul. 2024",
+    tags:["backend","sql","python","team","data"],weights:{backend:3,sql:3,python:2,team:2,data:2},
     bullets:[
-      ["Worked through machine learning fundamentals including preprocessing, feature selection, model training, and evaluation.",["ml","data"]],
-      ["Built a decision tree classifier in Python and explored hyperparameter tuning and cross-validation.",["ml","python"]],
-      ["Gained introductory exposure to cloud-based ML tooling and team-based technical learning environments.",["ml","team"]]
+      ["Wrote and tuned PostgreSQL queries powering internal reporting dashboards, working under senior engineer review.",["backend","sql","data"]],
+      ["Built Python FastAPI endpoints supporting dynamic website features, with request validation handled through Pydantic models.",["backend","python"]],
+      ["Resolved backend bug tickets and refactored existing modules inside a production codebase, participating in the team's code review workflow.",["team","backend"]]
     ],
     cs:{
-      problem:"Get past tutorial-level ML: work the full loop from raw data to an evaluated model.",
-      approach:"A hands-on program covering preprocessing, feature selection, training, and evaluation — culminating in a decision-tree classifier built in Python.",
-      notes:["Used hyperparameter tuning and cross-validation rather than a single train/test split.","First exposure to cloud-based ML tooling and learning in a team setting."],
-      stack:["Python","Decision trees","Cross-validation","AWS tooling"],links:[]
+      problem:"Internal reporting dashboards needed reliable data and endpoints inside a production backend.",
+      approach:"Wrote and tuned PostgreSQL queries feeding reporting dashboards, and built FastAPI endpoints with Pydantic request validation.",
+      notes:["Worked the normal production loop: bug tickets, refactoring, code review.","First sustained experience navigating a codebase I didn't write, under senior engineer review."],
+      stack:["Python","FastAPI","Pydantic","PostgreSQL","SQL"],links:[]
     }
   },
   {
     id:"prompt",title:"Prompt Engineering in AI Models",kind:"Writing",role:"Independent article | self-directed study",
     tags:["llm","writing","ml","data"],weights:{llm:3,writing:3,ml:2,data:1},
     bullets:[
-      ["Tested 200 prompts across six prompting techniques to study how prompt style affects response quality.",["llm","data","writing"]],
-      ["Mapped common AI response failure modes and wrote a practical analysis of prompt design behavior.",["llm","ml","writing"]]
+      ["Tested 200 prompts across six prompting techniques in a self-directed study on how prompting style affects response quality and where common failure modes appear.",["llm","data","writing"]],
+      ["Wrote the findings up as a practical analysis of prompt design behaviour.",["llm","ml","writing"]]
     ],
     cs:{
       problem:"Most prompting advice is vibes — I wanted conclusions from actually running the experiments.",
@@ -738,26 +858,11 @@ const SIGNALS=[
     }
   },
   {
-    id:"wade",title:"Wade Maritime Pvt. Ltd.",kind:"Experience",role:"Backend Intern | Apr.–Jul. 2024",
-    tags:["backend","sql","python","team","data"],weights:{backend:3,sql:3,python:2,team:2,data:2},
-    bullets:[
-      ["Contributed to backend development by writing and adjusting PostgreSQL queries for internal reporting dashboards.",["backend","sql","data"]],
-      ["Helped build Python FastAPI endpoints with input validation handled through Pydantic models.",["backend","python"]],
-      ["Worked through bug tickets, code cleanup, daily standups, and code reviews in a production codebase.",["team","backend"]]
-    ],
-    cs:{
-      problem:"Internal reporting dashboards needed reliable data and endpoints inside a production backend.",
-      approach:"Wrote and adjusted PostgreSQL queries feeding reporting dashboards, and built FastAPI endpoints with Pydantic input validation.",
-      notes:["Worked the normal production loop: bug tickets, cleanup, daily standups, code review.","First sustained experience navigating a codebase I didn't write."],
-      stack:["Python","FastAPI","Pydantic","PostgreSQL","SQL"],links:[]
-    }
-  },
-  {
     id:"irrigation",title:"Automatic Irrigation System",kind:"Project",role:"Arduino | IoT sensors | IIT Bombay showcase",
     tags:["iot","data","ml","team"],weights:{iot:3,data:2,ml:1,team:1},
     bullets:[
-      ["Built an Arduino setup with soil moisture, humidity, rain, and light sensors to automate watering for drought-prone plots.",["iot","data"]],
-      ["Implemented sensor-driven pump control logic and data logging to track watering patterns over time.",["iot","data"]],
+      ["Built an Arduino-based setup with soil moisture, humidity, rain, and light sensors to automate watering for drought-prone test plots, with sensor-driven pump control and data logging.",["iot","data"]],
+      ["Tracked watering patterns over time through the logged sensor data rather than a fixed schedule.",["iot","data"]],
       ["Shortlisted among 15 teams nationally to present at an IoT showcase hosted at IIT Bombay.",["team"]]
     ],
     cs:{
@@ -771,8 +876,8 @@ const SIGNALS=[
     id:"molcraft",title:"MolCraft",kind:"Project",role:"Flutter | Figma | Google Play Store",
     tags:["mobile","frontend","data"],weights:{mobile:3,frontend:2,data:1},
     bullets:[
-      ["Developed and published a Flutter app on the Google Play Store with interactive 3D models of common chemistry molecules.",["mobile"]],
-      ["Designed the interface in Figma, translating 2D textbook diagrams into touch-controlled 3D structures for students.",["frontend","mobile"]]
+      ["Developed and published a Flutter mobile app on the Google Play Store that displays interactive 3D models of common chemistry molecules.",["mobile"]],
+      ["Designed the interface in Figma, translating 2D textbook diagrams into touch-controlled 3D structures aimed at students.",["frontend","mobile"]]
     ],
     cs:{
       problem:"Chemistry textbooks flatten molecules into 2-D — students lose the geometry that makes structures make sense.",
@@ -785,9 +890,9 @@ const SIGNALS=[
     id:"s1313",title:"Solutions 1313",kind:"Experience",role:"Frontend Intern | May–Aug. 2022",
     tags:["frontend","team"],weights:{frontend:3,team:1},
     bullets:[
-      ["Contributed frontend components for client websites using HTML, CSS, and JavaScript.",["frontend"]],
-      ["Adjusted existing JavaScript to improve consistency across browsers and screen sizes.",["frontend"]],
-      ["Used Chrome DevTools to investigate and resolve UI and responsiveness issues.",["frontend","team"]]
+      ["Built frontend components for client websites using HTML, CSS, and JavaScript alongside the development team.",["frontend","team"]],
+      ["Reworked existing JavaScript to improve cross-browser consistency and responsive behaviour across screen sizes.",["frontend"]],
+      ["Used Chrome DevTools to diagnose and resolve UI and layout issues.",["frontend"]]
     ],
     cs:{
       problem:"Client sites needed consistent behavior across browsers and screen sizes.",
@@ -808,7 +913,7 @@ const embedInput=s=>`${s.title} — ${s.kind}. ${s.role}. ${s.bullets.map(b=>b[0
    2 · state + element handles
 ===================================================================== */
 const state={
-  mode:"chips",            // "chips" | "semantic"
+  mode:"default",          // "default" | "chips" | "semantic"
   jdVec:null,jdText:"",
   embedder:null,modelLoading:null,modelFailed:false,
   vecs:null,               // {proj:{id:vec}, bul:{id:[vec]}}
@@ -940,6 +1045,10 @@ async function ensureCorpus(){
    5 · ranking (both modes return the same row shape)
 ===================================================================== */
 const selectedTags=()=>el.chips.filter(c=>c.getAttribute("aria-pressed")==="true").map(c=>c.dataset.tag);
+/* authored order — what I'd lead with if nobody asked. No model involved. */
+function rankDefault(){
+  return SIGNALS.map(s=>({s,score:0,cos:null,pct:0,hot:false,dim:false}));
+}
 function rankChips(tags){
   const max=Math.max(1,tags.length*3);
   const rows=SIGNALS.map(s=>{
@@ -962,6 +1071,7 @@ function rankSemantic(){
 }
 function bulletOrder(s,tags,semantic){
   const idx=s.bullets.map((_,i)=>i);
+  if(state.mode==="default")return idx;     /* authored order until someone asks */
   if(semantic&&state.vecs&&state.vecs.bul[s.id]){
     return idx.sort((a,b)=>dot(state.jdVec,state.vecs.bul[s.id][b])-dot(state.jdVec,state.vecs.bul[s.id][a]));
   }
@@ -1015,7 +1125,12 @@ function reorder(mutate){
     vtBusy=true;
     try{
       const t=document.startViewTransition(mutate);
-      (t.finished||Promise.resolve()).finally(()=>{vtBusy=false;});
+      const done=()=>{vtBusy=false;};
+      /* an aborted transition rejects finished/ready/updateCallbackDone — settle them
+         all, or the abort surfaces as an unhandled DOMException in the console. */
+      if(t.finished&&t.finished.then)t.finished.then(done,done);else done();
+      if(t.ready&&t.ready.catch)t.ready.catch(()=>{});
+      if(t.updateCallbackDone&&t.updateCallbackDone.catch)t.updateCallbackDone.catch(()=>{});
     }catch(e){vtBusy=false;mutate();}
     return;
   }
@@ -1038,7 +1153,8 @@ function updateCards(ranked,semantic,tags){
     c.querySelector(".g-fill").style.strokeDashoffset=(ARC*(1-r.pct/100)).toFixed(1);
     c.querySelector(".g-num").textContent=r.pct;
     c.querySelector(".rawfit").textContent=semantic?("cos "+r.cos.toFixed(3)):("tags "+r.score+"/"+Math.max(1,tags.length*3));
-    c.querySelectorAll(".tag").forEach(t=>t.classList.toggle("on",!semantic&&tags.includes(t.dataset.tag)));
+    const highlight=!semantic&&state.mode!=="default";
+    c.querySelectorAll(".tag").forEach(t=>t.classList.toggle("on",highlight&&tags.includes(t.dataset.tag)));
     const ul=c.querySelector(".card-bullets");
     for(const i of bulletOrder(r.s,tags,semantic))ul.appendChild(bulletNodes[r.s.id][i]);
     el.grid.appendChild(c);   /* reorder */
@@ -1184,18 +1300,32 @@ const listPhrase=items=>{
   const w=items.map(t=>LABELS[t]);
   return w.length===1?w[0]:w.slice(0,-1).join(", ")+" and "+w[w.length-1];
 };
-function renderOutput(ranked,semantic,tags){
+function renderOutput(ranked,semantic,tags,plain){
   el.matchesPanel.hidden=!semantic;
   el.weightsPanel.hidden=semantic;
   if(semantic){
+    const weak=ranked[0].cos<WEAK_FIT;
     el.matchList.innerHTML=ranked.slice(0,5).map((r,i)=>
-      '<div class="match-row '+(i===0?"top":"")+'">'+
+      '<div class="match-row '+(i===0&&!weak?"top":"")+'">'+
       '<span class="idx">0'+(i+1)+'</span><span class="nm">'+esc(r.s.title)+'</span><span class="cs">'+r.cos.toFixed(3)+'</span>'+
-      '<span class="bar"><i style="width:'+r.pct+'%"></i></span></div>').join("");
+      '<span class="bar"><i style="width:'+r.pct+'%"></i></span></div>').join("")+
+      '<p class="calib">Cosine here compresses into roughly 0.2–0.6 — the <em>order</em> is the signal, the absolute number isn’t. Anything under '+WEAK_FIT.toFixed(2)+' I treat as no real match.</p>';
     el.selectedCount.textContent="job description override active";
-    el.fitScore.textContent="top cos "+ranked[0].cos.toFixed(2);
+    el.fitScore.textContent=weak?"weak fit":"top cos "+ranked[0].cos.toFixed(2);
     const a=ranked[0],b=ranked[1],c=ranked[2];
-    typePitch("Against this job description, the closest work is "+a.s.title+" (cos "+a.cos.toFixed(2)+"), then "+b.s.title+" and "+c.s.title+". Ranked by MiniLM sentence embeddings computed in your browser — the resume below is rebuilt to match.");
+    if(weak){
+      typePitch("Honestly — nothing here is a strong match for this role. The closest is "+a.s.title+" at cos "+a.cos.toFixed(2)+", which is below the threshold I'd call a real fit. I'd rather tell you that than reorder some cards and hope you don't check.");
+    }else{
+      typePitch("Against this job description, the closest work is "+a.s.title+" (cos "+a.cos.toFixed(2)+"), then "+b.s.title+" and "+c.s.title+". Ranked by MiniLM sentence embeddings computed in your browser — the CV preview below is rebuilt to match.");
+    }
+  }else if(plain){
+    el.weightList.innerHTML=TAGKEYS.map(t=>{
+      const prevalence=Math.max(10,Math.round(SIGNALS.reduce((s,x)=>s+(x.weights[t]||0),0)/20*100));
+      return '<div class="weight-row"><span>'+esc(LABELS[t].split(" ")[0])+'</span><span class="track"><i style="width:'+prevalence+'%;opacity:.32"></i></span><span>—</span></div>';
+    }).join("");
+    el.selectedCount.textContent="no query yet";
+    el.fitScore.textContent="idle";
+    typePitch("Nothing pasted yet, so the cards below are in the order I'd lead with. Paste a job description above and a sentence-transformer re-ranks all nine against it — or use the tag model if you'd rather not paste anything.");
   }else{
     el.weightList.innerHTML=TAGKEYS.map(t=>{
       const active=tags.includes(t);
@@ -1208,17 +1338,27 @@ function renderOutput(ranked,semantic,tags){
     typePitch("For roles emphasizing "+listPhrase(tags)+", the strongest evidence is "+(top.join(", ")||"the project and internship foundation")+". Scores here come from a transparent tag model — paste a real job description above and a sentence-transformer takes over.");
   }
 }
-function renderHero(ranked,semantic,tags){
+function renderHero(ranked,semantic,tags,plain){
   if(semantic){
-    el.heroFit.textContent=ranked[0].cos.toFixed(2);
-    el.heroFitLab.textContent="top cosine";
-    el.heroSignals.textContent=ranked.filter(r=>r.cos>0.25).length;
-    el.heroFocus.textContent="job description";
+    const weak=ranked[0].cos<WEAK_FIT;
+    /* rank, not raw cosine — a "0.42" headline reads as failure to anyone who knows
+       MiniLM's scale, and the bare number means nothing without the corpus. */
+    el.heroFit.textContent=weak?"none":"#1";
+    el.heroFitLab.textContent=weak?"no strong match":"of "+SIGNALS.length+" · cos "+ranked[0].cos.toFixed(2);
+    el.heroSignals.textContent=ranked.filter(r=>r.cos>=WEAK_FIT).length;
+    el.heroFocus.textContent="your JD";
     state.topCos=ranked[0].cos;state.topTitle=ranked[0].s.title;
     el.mechCap.textContent="Live: cos θ between this job description and \u201C"+state.topTitle+"\u201D = "+state.topCos.toFixed(3)+", measured in 384 dimensions by MiniLM in your browser.";
+  }else if(plain){
+    el.heroFit.textContent="—";
+    el.heroFitLab.textContent="top match";
+    el.heroSignals.textContent=SIGNALS.length;
+    el.heroFocus.textContent="ML";
+    state.topCos=null;state.topTitle=null;
+    el.mechCap.textContent="Every card's fit = cos θ between its embedding and the job description's, measured in 384 dimensions. This is the whole trick; everything else is presentation.";
   }else{
-    el.heroFit.textContent=(ranked[0].pct/100).toFixed(2);
-    el.heroFitLab.textContent="top tag fit";
+    el.heroFit.textContent="#1";
+    el.heroFitLab.textContent="tag model · "+ranked[0].pct+"%";
     el.heroSignals.textContent=ranked.filter(r=>r.score>0).length||SIGNALS.length;
     el.heroFocus.textContent=tags.includes("llm")?"LLM":tags.includes("backend")?"API":tags.includes("mobile")?"APP":"ML";
     state.topCos=null;state.topTitle=null;
@@ -1229,32 +1369,37 @@ function renderHero(ranked,semantic,tags){
 /* =====================================================================
    9 · resume — preview, visible rebuild, export, print
 ===================================================================== */
-function renderResume(ranked,semantic,tags){
-  const chosen=(semantic?ranked.filter(r=>r.cos>0.1):ranked.filter(r=>r.score>0)).slice(0,5);
+function renderResume(ranked,semantic,tags,plain){
+  const chosen=plain?ranked.slice(0,5)
+    :(semantic?ranked.filter(r=>r.cos>0.1):ranked.filter(r=>r.score>0)).slice(0,5);
   const rows=chosen.length?chosen:ranked.slice(0,5);
   const focus=semantic
     ?"Tailored to a pasted job description — closest matches: "+rows.slice(0,3).map(r=>r.s.title).join(", ")+"."
-    :"University of Waterloo CS student aiming at ML engineering roles focused on "+listPhrase(tags)+".";
+    :(plain
+      ?"University of Waterloo CS student. Software engineering intern building FastAPI + PostgreSQL backends and React admin frontends; ML projects evaluated against real baselines."
+      :"University of Waterloo CS student aiming at ML engineering roles focused on "+listPhrase(tags)+".");
   const items=rows.map(r=>{
     const order=bulletOrder(r.s,tags,semantic).slice(0,2);
     const bl=order.map(i=>"<li>"+esc(r.s.bullets[i][0])+"</li>").join("");
     return '<div class="paper-item"><strong>'+esc(r.s.title)+"</strong><span>"+esc(r.s.role)+"</span><ul>"+bl+"</ul></div>";
   }).join("");
-  const skillTags=semantic?[...new Set(rows.flatMap(r=>r.s.tags))]:(tags.length?tags:null);
-  const skillText=skillTags?skillTags.map(t=>LABELS[t]).join(", "):"Python, machine learning fundamentals, FastAPI, PostgreSQL, JavaScript, Flutter, Arduino";
+  const skillTags=plain?null:(semantic?[...new Set(rows.flatMap(r=>r.s.tags))]:(tags.length?tags:null));
+  const skillText=skillTags?skillTags.map(t=>LABELS[t]).join(", ")
+    :"Python, FastAPI, PostgreSQL, SQLAlchemy, Alembic, XGBoost, scikit-learn, pandas, React, TypeScript, JavaScript, Flutter, SQL";
   el.paper.innerHTML='<h3>Navraj Singh Gill</h3>'+
     '<div class="contact">ns8gill@uwaterloo.ca | linkedin.com/in/navrajsgill | github.com/Navraj-bite | +1 (548) 350-0910</div>'+
     '<div class="paper-section"><h4>Profile</h4><ul>'+
       '<li>'+esc(focus)+'</li>'+
-      '<li>Currently a Software Engineering Intern at Code Driven Labs; hands-on experience across LLM-backed products, ML training, backend internships, and technical writing.</li>'+
+      '<li>Software Engineering Intern at Code Driven Labs since May 2026; prior backend and frontend internships, plus independent ML and mobile projects.</li>'+
     '</ul></div>'+
     '<div class="paper-section"><h4>Selected Evidence</h4>'+items+'</div>'+
     '<div class="paper-section"><h4>Skills</h4><ul><li>'+esc(skillText)+'</li></ul></div>'+
     '<div class="paper-section"><h4>Education</h4>'+
       '<div class="paper-item"><strong>University of Waterloo</strong><span>Bachelor of Computer Science candidate | 2025–2030</span>'+
-      '<ul><li>Relevant coursework: algorithm design and data abstraction, software development tools, linear algebra, calculus.</li></ul></div>'+
-    '</div>';
-  el.resumeMode.textContent=semantic?"MiniLM semantic match (cosine similarity)":"tag model ("+tags.length+" tags)";
+      '<ul><li>Relevant coursework: elementary algorithm design and data abstraction, tools and techniques for software development, linear algebra 1 (honours), calculus 2 (honours).</li></ul></div>'+
+    '</div>'+
+    '<p class="paper-note">Preview only — a re-ordered subset of the full CV. The complete, canonical version is the PDF.</p>';
+  el.resumeMode.textContent=semantic?"MiniLM semantic match (cosine similarity)":(plain?"default":"tag model ("+tags.length+" tags)");
   el.paper.classList.remove("flash");
   void el.paper.offsetWidth;
   el.paper.classList.add("flash");
@@ -1294,10 +1439,9 @@ function buildTimeline(){
   const x=t=>L+(t-X0)/(X1-X0)*(W-L-Rp);
   const rows=[
     {label:"Solutions 1313",sub:"Frontend Intern",a:2022.37,b:2022.66},
-    {label:"AWS ML Workshop",sub:"hands-on training",a:2023.45,b:2023.66},
     {label:"Wade Maritime",sub:"Backend Intern",a:2024.29,b:2024.58},
     {label:"University of Waterloo",sub:"BCS · to 2030",a:2025.70,b:X1-0.05,open:true},
-    {label:"Code Driven Labs",sub:"SWE Intern · current",a:2026.28,b:2026.62,approx:true}
+    {label:"Code Driven Labs",sub:"SWE Intern · current",a:2026.37,b:2026.57}
   ];
   let svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">';
   svg+='<defs><linearGradient id="fadeblue" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2337E8"/><stop offset="1" stop-color="#2337E8" stop-opacity="0"/></linearGradient></defs>';
@@ -1396,7 +1540,9 @@ function openCase(id,opener){
   el.dlgRole.textContent=s.role;
   const r=state.ranked.find(x=>x.s.id===id);
   const rankPos=r?state.ranked.indexOf(r)+1:0;
-  el.dlgFit.textContent=r?(r.cos!=null?"current fit vs your job description: cos "+r.cos.toFixed(3)+" \u00B7 rank "+rankPos+"/"+SIGNALS.length:"tag score "+r.score+" \u00B7 rank "+rankPos+"/"+SIGNALS.length):"";
+  el.dlgFit.textContent=state.mode==="default"?""
+    :(r?(r.cos!=null?"current fit vs your job description: cos "+r.cos.toFixed(3)+" \u00B7 rank "+rankPos+"/"+SIGNALS.length
+                    :"tag score "+r.score+" \u00B7 rank "+rankPos+"/"+SIGNALS.length):"");
   const cs=s.cs;
   el.dlgBody.innerHTML=
     '<div class="dlg-sec"><h4>Problem</h4><p>'+esc(cs.problem)+'</p></div>'+
@@ -1427,13 +1573,15 @@ el.dlg.addEventListener("click",e=>{
 function update(){
   const tags=selectedTags();
   const semantic=state.mode==="semantic"&&!!state.jdVec&&!!state.vecs;
-  const ranked=semantic?rankSemantic():rankChips(tags);
+  const plain=state.mode==="default";
+  const ranked=semantic?rankSemantic():(plain?rankDefault():rankChips(tags));
   state.ranked=ranked;
-  renderHero(ranked,semantic,tags);
-  renderOutput(ranked,semantic,tags);
+  el.grid.classList.toggle("plain",plain);
+  renderHero(ranked,semantic,tags,plain);
+  renderOutput(ranked,semantic,tags,plain);
   reorder(()=>updateCards(ranked,semantic,tags));
   layoutMap(semantic,ranked);
-  renderResume(ranked,semantic,tags);
+  renderResume(ranked,semantic,tags,plain);
   if(initMech.kick)initMech.kick();
 }
 
@@ -1448,25 +1596,43 @@ function setChipsEnabled(on){
 el.chips.forEach(chip=>chip.addEventListener("click",()=>{
   chip.setAttribute("aria-pressed",chip.getAttribute("aria-pressed")==="true"?"false":"true");
   el.presets.forEach(p=>p.classList.remove("active"));
+  if(state.mode==="default")state.mode="chips";
   update();
 }));
 el.presets.forEach(preset=>preset.addEventListener("click",()=>{
   const tags=PRESETS[preset.dataset.preset]||[];
   el.chips.forEach(c=>c.setAttribute("aria-pressed",tags.includes(c.dataset.tag)?"true":"false"));
   el.presets.forEach(p=>p.classList.toggle("active",p===preset));
+  if(state.mode==="default")state.mode="chips";
   update();
 }));
+/* the tailored panel is opt-in — opening it is what turns the ranker on, and the
+   canvas can't size itself until the panel actually has width. */
+const tailorPanel=$("#tailorPanel");
+if(tailorPanel)tailorPanel.addEventListener("toggle",()=>{
+  if(!tailorPanel.open)return;
+  if(initMech.kick)initMech.kick();
+  setTimeout(()=>{if(initMech.kick)initMech.kick();},80); /* after the IntersectionObserver catches up */
+  update();
+  ensureModel();                           /* warm the model while they read the panel */
+});
 const onJD=debounce(async()=>{
   const text=el.jd.value.trim();
   state.jdText=text;
   if(text.length<12){
-    if(state.mode!=="chips"){state.mode="chips";state.jdVec=null;setChipsEnabled(true);update();}
+    if(state.mode==="semantic"){state.mode="chips";state.jdVec=null;setChipsEnabled(true);update();}
     return;
   }
   const emb=await ensureModel();
-  if(!emb)return;                          /* quiet fallback — chips stay in charge */
+  if(!emb){                                /* say so — a silent fallback reads as broken */
+    showToast("Semantic model unavailable — tag model active");
+    return;
+  }
   const corpus=await ensureCorpus();
-  if(!corpus)return;
+  if(!corpus){
+    showToast("Couldn't embed the portfolio — tag model active");
+    return;
+  }
   if(el.jd.value.trim()!==text)return;     /* stale keystroke */
   const vs=await embedBatch([text]);
   if(el.jd.value.trim()!==text)return;
@@ -1478,7 +1644,9 @@ const onJD=debounce(async()=>{
 el.jd.addEventListener("input",onJD);
 el.jd.addEventListener("focus",()=>{ensureModel();},{once:true});   /* warm the model while they type */
 el.jdClear.addEventListener("click",()=>{
-  el.jd.value="";state.jdText="";state.jdVec=null;state.mode="chips";
+  el.jd.value="";state.jdText="";state.jdVec=null;state.mode="default";
+  el.presets.forEach(p=>p.classList.toggle("active",p.dataset.preset==="ml"));
+  el.chips.forEach(c=>c.setAttribute("aria-pressed",PRESETS.ml.includes(c.dataset.tag)?"true":"false"));
   setChipsEnabled(true);update();el.jd.focus();
 });
 $$(".sample").forEach(b=>b.addEventListener("click",()=>{
@@ -1487,7 +1655,6 @@ $$(".sample").forEach(b=>b.addEventListener("click",()=>{
   el.jd.focus();
 }));
 $("#exportResume").addEventListener("click",exportResume);
-$("#heroExport").addEventListener("click",exportResume);
 $("#printResume").addEventListener("click",()=>window.print());
 $("#copyPitch").addEventListener("click",async()=>{
   try{await navigator.clipboard.writeText(el.pitch.textContent);showToast("Pitch copied");}
